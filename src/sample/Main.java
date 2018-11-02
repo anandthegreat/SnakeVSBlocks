@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,7 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
+import javafx.scene.layout.Pane;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
@@ -28,10 +29,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.layout.Pane;
 
 public class Main extends Application {
 
-    double newX=0;  //for shifting X coordinates of snake;
+    double t=0;  //for increasing time
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     @Override
@@ -39,7 +41,7 @@ public class Main extends Application {
 
     public void start(Stage primaryStage) throws Exception{
 
-        Group group = new Group();                                                      //Changed root to group
+        Pane group = new Pane();                                                      //Changed root to group
         primaryStage.getIcons().add(new Image("file:Snake-icon.png"));;
 
         Image image = new Image("file:snake-vs-block.png");
@@ -93,10 +95,36 @@ public class Main extends Application {
 
     }
 //////////////////////////////////////////////////////////////////////////////////////////
+    public static class Blocks extends Rectangle {
+    int blockValue;                     //number written on the block
+    Blocks(int x, int y, int w, int h, int blockValue, Color color) {
+
+        super(w, h, color);
+        this.blockValue = blockValue;
+        setTranslateX(x);
+        setTranslateY(y);
+
+    }
+    void moveLeft() {
+        setTranslateX(getTranslateX() - 5);
+    }
+    void moveRight() {
+
+        setTranslateX(getTranslateX() + 5);
+    }
+    void moveUp() {
+        setTranslateY(getTranslateY() - 5);
+    }
+    void moveDown() {
+        setTranslateY(getTranslateY() + 5);
+    }
+
+}
+    ///////////////////////////////////////////////////////////////////////////////////
 
     private void Menu(Stage primaryStage, ImageView imageview) {
 
-        Group subroot = new Group();
+        Pane subroot = new Pane();
 
         Text text = new Text();
         text.setText("Snake \n   vs \nBlock");
@@ -206,8 +234,79 @@ public class Main extends Application {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+
+    protected void Play(Stage primaryStage, ImageView imageview) {
+
+        AnimationTimer timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+               //update
+            }
+        };
+
+        timer.start();
+
+
+        Pane play=new Pane();
+
+
+        Image image = new Image("file:blackBackground.png");
+        ImageView blackBackground=new ImageView(image);
+        blackBackground.setFitHeight(820);
+        blackBackground.setFitWidth(620);
+
+        Circle snake = new Circle(300,630,20);
+        snake.setFill(Color.WHITE);
+
+
+        Button btn6=new Button("Quit Game");
+        btn6.setLayoutX(220);
+        btn6.setLayoutY(730);
+        btn6.setMinSize(160, 40);
+        btn6.setStyle("-fx-font: 20 arial; -fx-base: #ffa500;");
+
+        EventHandler<ActionEvent> event6 = new EventHandler<ActionEvent>() {
+
+            public void handle(ActionEvent e)
+            {
+                Menu(primaryStage, imageview);
+
+            }
+        };
+
+
+        // when button is pressed
+        btn6.setOnAction(event6);
+
+        play.getChildren().setAll(blackBackground,snake,btn6);
+
+        Scene scene=new Scene(play,600,800);
+
+        scene.setOnKeyPressed(e-> {
+
+            switch(e.getCode()){
+
+                case A :  snake.setCenterX(snake.getCenterX()-10);
+                    break;
+                case D : snake.setCenterX(snake.getCenterX()+10);
+                    break;
+
+            }});
+
+
+        primaryStage.setScene(scene);
+
+
+
+
+    }
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+
     protected void Instructions(Stage primaryStage, ImageView imageview) {
-        Group instructions=new Group();
+        Pane instructions=new Pane();
         Text text=new Text();
         text.setText("				How To Play \n"
                 + "Your have to control snake, collect food, and destroy\n"
@@ -272,68 +371,10 @@ public class Main extends Application {
 
     }
 
-//////////////////////////////////////////////////////////////////////////////////////
-
-
-    protected void Play(Stage primaryStage, ImageView imageview) {
-
-        Group play=new Group();
-
-        Image image = new Image("file:blackBackground.png");
-        ImageView blackBackground=new ImageView(image);
-        blackBackground.setFitHeight(820);
-        blackBackground.setFitWidth(620);
-
-        Circle snake = new Circle(300,630,20);
-        snake.setFill(Color.WHITE);
-
-
-        Button btn6=new Button("Quit Game");
-        btn6.setLayoutX(220);
-        btn6.setLayoutY(730);
-        btn6.setMinSize(160, 40);
-        btn6.setStyle("-fx-font: 20 arial; -fx-base: #ffa500;");
-
-        EventHandler<ActionEvent> event6 = new EventHandler<ActionEvent>() {
-
-            public void handle(ActionEvent e)
-            {
-                Menu(primaryStage, imageview);
-
-            }
-        };
-
-
-        // when button is pressed
-        btn6.setOnAction(event6);
-
-        play.getChildren().setAll(blackBackground,snake,btn6);
-
-        Scene scene=new Scene(play,600,800);
-
-        scene.setOnKeyPressed(e-> {
-
-            switch(e.getCode()){
-
-                case LEFT :  snake.setCenterX(snake.getCenterX()-10);
-                break;
-                case RIGHT : snake.setCenterX(snake.getCenterX()+10);
-                break;
-
-        }});
-
-
-        primaryStage.setScene(scene);
-
-
-
-
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////
 
     protected void LeaderBoard(Stage primaryStage, ImageView imageview) {
-        Group leaderboard=new Group();
+        Pane leaderboard=new Pane();
 
         Image image = new Image("file:blackBackground.png");
         ImageView blackBackground=new ImageView(image);
@@ -371,7 +412,7 @@ public class Main extends Application {
     /////////////////////////////////////////////////////////////////////////////////////////////
 
     protected void Themes(Stage primaryStage, ImageView imageview) {
-        Group themes=new Group();
+        Pane themes=new Pane();
 
         Image image = new Image("file:blackBackground.png");
         ImageView blackBackground=new ImageView(image);
