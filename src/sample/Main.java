@@ -4,11 +4,15 @@ import javafx.application.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.KeyCode;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -27,17 +31,15 @@ import javafx.scene.text.Text;
 
 public class Main extends Application {
 
+    double newX=0;  //for shifting X coordinates of snake;
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     @Override
 
+
     public void start(Stage primaryStage) throws Exception{
 
-//        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         Group group = new Group();                                                      //Changed root to group
-
-        // set icon
-
         primaryStage.getIcons().add(new Image("file:Snake-icon.png"));;
 
         Image image = new Image("file:snake-vs-block.png");
@@ -54,7 +56,7 @@ public class Main extends Application {
 
         Button btn=new Button("Press ENTER");
         btn.setLayoutX(85);
-        btn.setLayoutY(450);
+        btn.setLayoutY(490);
         btn.setMinSize(200, 50);
         btn.setStyle("-fx-font: 25 arial; -fx-base: #ee2211;");
 
@@ -128,11 +130,31 @@ public class Main extends Application {
         btn2.setMinSize(160, 40);
         btn2.setStyle("-fx-font: 20 arial; -fx-base: #ffa500;");
 
+        EventHandler<ActionEvent> event2 = new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e)
+            {
+                LeaderBoard(primaryStage, imageview);
+
+            }
+        };
+        btn2.setOnAction(event2);
+
+
         Button btn3=new Button("Themes");
         btn3.setLayoutX(95);
         btn3.setLayoutY(570);
         btn3.setMinSize(160, 40);
         btn3.setStyle("-fx-font: 20 arial; -fx-base: #ffa500;");
+
+        EventHandler<ActionEvent> event3 = new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e)
+            {
+                Themes(primaryStage, imageview);
+
+            }
+        };
+        btn3.setOnAction(event3);
+
 
 
 
@@ -254,6 +276,7 @@ public class Main extends Application {
 
 
     protected void Play(Stage primaryStage, ImageView imageview) {
+
         Group play=new Group();
 
         Image image = new Image("file:blackBackground.png");
@@ -261,23 +284,61 @@ public class Main extends Application {
         blackBackground.setFitHeight(820);
         blackBackground.setFitWidth(620);
 
-
-        Image image2 = new Image("file:firstBall.png");
-        ImageView firstBall=new ImageView(image2);
-        firstBall.setFitHeight(50);
-        firstBall.setFitWidth(50);
-        firstBall.setLayoutX(270);
-        firstBall.setLayoutY(600);
-
-        Image image3 = new Image("file:snakeBody.png");
-        ImageView snakeBody=new ImageView(image3);
-        snakeBody.setFitHeight(50);
-        snakeBody.setFitWidth(50);
-        snakeBody.setLayoutX(270);
-        snakeBody.setLayoutY(650);
+        Circle snake = new Circle(300,630,20);
+        snake.setFill(Color.WHITE);
 
 
+        Button btn6=new Button("Quit Game");
+        btn6.setLayoutX(220);
+        btn6.setLayoutY(730);
+        btn6.setMinSize(160, 40);
+        btn6.setStyle("-fx-font: 20 arial; -fx-base: #ffa500;");
 
+        EventHandler<ActionEvent> event6 = new EventHandler<ActionEvent>() {
+
+            public void handle(ActionEvent e)
+            {
+                Menu(primaryStage, imageview);
+
+            }
+        };
+
+
+        // when button is pressed
+        btn6.setOnAction(event6);
+
+        play.getChildren().setAll(blackBackground,snake,btn6);
+
+        Scene scene=new Scene(play,600,800);
+
+        scene.setOnKeyPressed(e-> {
+
+            switch(e.getCode()){
+
+                case LEFT :  snake.setCenterX(snake.getCenterX()-10);
+                break;
+                case RIGHT : snake.setCenterX(snake.getCenterX()+10);
+                break;
+
+        }});
+
+
+        primaryStage.setScene(scene);
+
+
+
+
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+
+    protected void LeaderBoard(Stage primaryStage, ImageView imageview) {
+        Group leaderboard=new Group();
+
+        Image image = new Image("file:blackBackground.png");
+        ImageView blackBackground=new ImageView(image);
+        blackBackground.setFitHeight(820);
+        blackBackground.setFitWidth(620);
 
 
         Button btn6=new Button("Back to Menu");
@@ -297,14 +358,53 @@ public class Main extends Application {
         // when button is pressed
         btn6.setOnAction(event6);
 
-        play.getChildren().setAll(blackBackground,btn6);
+        leaderboard.getChildren().setAll(blackBackground,btn6);
 
-        Scene scene=new Scene(play,600,800);
+        Scene scene=new Scene(leaderboard,600,800);
+
 
         primaryStage.setScene(scene);
 
 
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+    protected void Themes(Stage primaryStage, ImageView imageview) {
+        Group themes=new Group();
+
+        Image image = new Image("file:blackBackground.png");
+        ImageView blackBackground=new ImageView(image);
+        blackBackground.setFitHeight(820);
+        blackBackground.setFitWidth(620);
+
+        Button btn6=new Button("Back to Menu");
+        btn6.setLayoutX(220);
+        btn6.setLayoutY(730);
+        btn6.setMinSize(160, 40);
+        btn6.setStyle("-fx-font: 20 arial; -fx-base: #ffa500;");
+
+        EventHandler<ActionEvent> event6 = new EventHandler<ActionEvent>() {
+
+            public void handle(ActionEvent e)
+            {
+                Menu(primaryStage, imageview);
+
+            }
+        };
+        // when button is pressed
+        btn6.setOnAction(event6);
+
+        themes.getChildren().setAll(blackBackground,btn6);
+
+        Scene scene=new Scene(themes,600,800);
+
+        primaryStage.setScene(scene);
+
+
+    }
+
+
 
     public static void main(String[] args) {
 
