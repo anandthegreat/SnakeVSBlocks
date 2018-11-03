@@ -1,15 +1,12 @@
 package sample;
 
-import javafx.animation.AnimationTimer;
+import javafx.animation.*;
 import javafx.application.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import javafx.animation.Animation;
-import javafx.animation.FadeTransition;
-import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
@@ -94,15 +91,19 @@ public class Main extends Application {
     
     //////////////////////////////////////////////////////////////////////////////////////////
     
-    public static class Blocks extends Rectangle {
+    public class Blocks extends Rectangle {
         private int blockValue;                     		//number written on the block
         
-        Blocks(int x, int y, int w, int h, int blockValue, Color color) {
+        public Blocks(int x, int y, int w, int h, int blockValue, Color color) {
 
             super(w, h, color);
+            super.setArcHeight(10);
+            super.setArcHeight(20);
             this.blockValue = blockValue;
             setTranslateX(x);
             setTranslateY(y);
+
+
 
         }
         
@@ -257,8 +258,30 @@ public class Main extends Application {
         blackBackground.setFitHeight(820);
         blackBackground.setFitWidth(620);
 
-        Circle snake = new Circle(300,630,20);
-        snake.setFill(Color.WHITE);
+        Circle snake[]=new Circle[4];
+        for(int i=0;i<4;i++){
+            snake[i]=new Circle(300,620+i*20,10);
+            snake[i].setFill(Color.WHITE);
+        }
+        
+
+        Blocks block1 = new Blocks(10,100,100,100,10,Color.YELLOW);
+        Blocks block2 = new Blocks(115,100,100,100,10,Color.YELLOW);
+        Blocks block3 = new Blocks(325,100,100,100,10,Color.YELLOW);
+        Blocks block4 = new Blocks(430,100,100,100,10,Color.YELLOW);
+
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.millis(45),
+                ae -> {
+                    block1.moveDown();
+                    block2.moveDown();
+                    block3.moveDown();
+                    block4.moveDown();
+                }
+
+         ));
+        timeline.setCycleCount(100);
+        timeline.play();
 
 
         Button btn6=new Button("Quit Game");
@@ -280,7 +303,8 @@ public class Main extends Application {
         // when button is pressed
         btn6.setOnAction(event6);
 
-        play.getChildren().setAll(blackBackground,snake,btn6);
+        play.getChildren().setAll(blackBackground,btn6,block1,block2,block3,block4);
+        play.getChildren().addAll(snake);
 
         Scene scene=new Scene(play,600,800);
 
@@ -288,9 +312,15 @@ public class Main extends Application {
 
             switch(e.getCode()){
 
-                case A :  snake.setCenterX(snake.getCenterX()-10);
+                case A :
+                    for(int i=0;i<4;i++){
+                        snake[i].setCenterX(snake[i].getCenterX()-10);
+                    }
                     break;
-                case D : snake.setCenterX(snake.getCenterX()+10);
+                case D :
+                    for(int i=0;i<4;i++) {
+                        snake[i].setCenterX(snake[i].getCenterX() + 10);
+                    }
                     break;
 
             }});
@@ -317,8 +347,8 @@ public class Main extends Application {
                 + "of length more than its value. If you continue hitting \n"
                 + "the block after that, you lose. \n \n"
                 + "				Controls : \n "
-                + "		Press left to turn left. \n "
-                + "		Press right to turn right. \n \n "
+                + "		Press -A- to turn left. \n "
+                + "		Press -D- to turn right. \n \n "
                 + "				Tokens : \n "
                 + "There are 4 token which could help you in scoring and \n "
                 + "tackling blocks. These are listed below: \n"
