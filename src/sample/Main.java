@@ -5,6 +5,8 @@ import javafx.application.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.effect.Bloom;
+import javafx.scene.effect.Glow;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
@@ -28,10 +30,15 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.layout.Pane;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.BlockingDeque;
+
 public class Main extends Application {
 
     double t=0;  //for increasing time
-
+    Random rand=new Random();
     ///////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -41,35 +48,57 @@ public class Main extends Application {
 
         Image image = new Image("file:snake-vs-block.png");
         ImageView imageview=new ImageView(image);
-        imageview.setFitHeight(820);
-        imageview.setFitWidth(620);
+        imageview.setFitHeight(820);    imageview.setFitWidth(620);
+
+        //Instantiating the Glow class
+        Glow glow = new Glow();
+        //setting level of the glow effect
+        glow.setLevel(0.5);
+        //Applying bloom effect to text
+        imageview.setEffect(glow);
 
         Text text = new Text();
         text.setText("Snake \n   vs \nBlock");
-        text.setX(65);
-        text.setY(250);
+        text.setX(65);      text.setY(250);
         text.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 75));
         text.setFill(Color.SEAGREEN);
 
+        Bloom bloom=new Bloom();
+        bloom.setThreshold(0.2);
+
+        //Applying bloom effect to text
+        text.setEffect(bloom);
+
         Button btn=new Button("Press ENTER");
-        btn.setLayoutX(85);
-        btn.setLayoutY(490);
+        btn.setLayoutX(85);     btn.setLayoutY(490);
         btn.setMinSize(200, 50);
         btn.setStyle("-fx-font: 25 arial; -fx-base: #008080;");
 
+        ///////////////////////////////////////////////////////////////////////
+        Circle snake_animation[]=new Circle[7];
+        TranslateTransition translateTransition[]=new TranslateTransition[7];
+        int tempY=40;
+        for(int i=0;i<7;i++) {
+            snake_animation[i]=new Circle();
+            snake_animation[i].setCenterX(40);
+            snake_animation[i].setCenterY(tempY);
+            snake_animation[i].setRadius(10);
+            snake_animation[i].setFill(Color.GAINSBORO);
+            snake_animation[i].setStrokeWidth(20);
+
+            translateTransition[i] = new TranslateTransition();
+            translateTransition[i].setDuration(Duration.millis(1000));
+            translateTransition[i].setNode(snake_animation[i]);
+            translateTransition[i].setByY(60);
+            translateTransition[i].play();
+
+            tempY=tempY-20;
+        }
+        snake_animation[0].setRadius(12);
+        /////////////////////////////////////////////////////////////////////
+
         // action event
-        EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
-
-            public void handle(ActionEvent e)
-            {
-                Menu(primaryStage, imageview);
-
-            }
-        };
-
-        // when button is pressed
-        btn.setOnAction(event);
-        
+        btn.setOnAction(e-> Menu(primaryStage,imageview));              //Replaced with lambda expression , a short method.
         
         // Blinking Effect in Button
         FadeTransition fadeTransition = new FadeTransition(Duration.seconds(4), btn);
@@ -79,6 +108,7 @@ public class Main extends Application {
         fadeTransition.play();
 
         group.getChildren().addAll(imageview,text,btn);
+        group.getChildren().addAll(snake_animation);
 
         Scene scene = new Scene(group, 600,800);
         
@@ -89,41 +119,7 @@ public class Main extends Application {
 
     }
     
-    //////////////////////////////////////////////////////////////////////////////////////////
-    
-    public class Blocks extends Rectangle {
-        private int blockValue;                     		//number written on the block
-        
-        public Blocks(int x, int y, int w, int h, int blockValue, Color color) {
 
-            super(w, h, color);
-            super.setArcHeight(10);
-            super.setArcHeight(20);
-            this.blockValue = blockValue;
-            setTranslateX(x);
-            setTranslateY(y);
-
-
-
-        }
-        
-        void moveLeft() {
-            setTranslateX(getTranslateX() - 5);
-        }
-        
-        void moveRight() {
-
-            setTranslateX(getTranslateX() + 5);
-        }
-        
-        void moveUp() {
-            setTranslateY(getTranslateY() - 5);
-        }
-        void moveDown() {
-            setTranslateY(getTranslateY() + 5);
-        }
-
-    }
     ///////////////////////////////////////////////////////////////////////////////////
 
     private void Menu(Stage primaryStage, ImageView imageview) {
@@ -132,31 +128,42 @@ public class Main extends Application {
 
         Text text = new Text();
         text.setText("Snake \n   vs \nBlock");
-        text.setX(65);
-        text.setY(250);
+        text.setX(65);      text.setY(250);
         text.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 75));
         text.setFill(Color.SEAGREEN);
 
-
+        Bloom bloom=new Bloom();
+        bloom.setThreshold(0.2);
+        //Applying bloom effect to text
+        text.setEffect(bloom);
 
         Button btn1=new Button("Play");
-        btn1.setLayoutX(95);
-        btn1.setLayoutY(450);
+        btn1.setLayoutX(95);    btn1.setLayoutY(450);
         btn1.setMinSize(160, 40);
         btn1.setStyle("-fx-font: 20 arial; -fx-base: #008080;");
 
-        EventHandler<ActionEvent> event1 = new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e)
-            {
-                Play(primaryStage, imageview);
+        ///////////////////////////////////////////////////////////////////////
+        Circle snake_animation[]=new Circle[12];
+        TranslateTransition translateTransition[]=new TranslateTransition[12];
+        int tempY=115;
+        for(int i=0;i<12;i++) {
+            snake_animation[i]=new Circle();
+            snake_animation[i].setCenterX(40);
+            snake_animation[i].setCenterY(tempY);
+            snake_animation[i].setRadius(10);
+            snake_animation[i].setFill(Color.GAINSBORO);
+            snake_animation[i].setStrokeWidth(20);
 
-            }
-        };
-        
-        // when button is pressed
-        btn1.setOnAction(event1);
+            translateTransition[i] = new TranslateTransition();
+            translateTransition[i].setDuration(Duration.millis(1000));
+            translateTransition[i].setNode(snake_animation[i]);
+            translateTransition[i].setByY(110);
+            translateTransition[i].play();
 
-
+            tempY=tempY-20;
+        }
+        snake_animation[0].setRadius(12);
+        /////////////////////////////////////////////////////////////////////
 
         Button btn2=new Button("LeaderBoard");
         btn2.setLayoutX(95);
@@ -164,33 +171,11 @@ public class Main extends Application {
         btn2.setMinSize(160, 40);
         btn2.setStyle("-fx-font: 20 arial; -fx-base: #008080;");
 
-        EventHandler<ActionEvent> event2 = new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e)
-            {
-                LeaderBoard(primaryStage, imageview);
-
-            }
-        };
-        // when button is pressed
-        btn2.setOnAction(event2);
-
-
         Button btn3=new Button("Themes");
         btn3.setLayoutX(95);
         btn3.setLayoutY(570);
         btn3.setMinSize(160, 40);
         btn3.setStyle("-fx-font: 20 arial; -fx-base: #008080;");
-
-        EventHandler<ActionEvent> event3 = new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e)
-            {
-                Themes(primaryStage, imageview);
-
-            }
-        };
-        
-        // when button is pressed
-        btn3.setOnAction(event3);
 
         Button btn4=new Button("How to Play");
         btn4.setLayoutX(95);
@@ -198,38 +183,21 @@ public class Main extends Application {
         btn4.setMinSize(160, 40);
         btn4.setStyle("-fx-font: 20 arial; -fx-base: #008080;");
 
-
-        EventHandler<ActionEvent> event4 = new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e)
-            {
-                Instructions(primaryStage, imageview);
-
-            }
-        };
-        
-        // when button is pressed
-        btn4.setOnAction(event4);
-
         Button btn5=new Button("Exit");
         btn5.setLayoutX(95);
         btn5.setLayoutY(690);
         btn5.setMinSize(160, 40);
         btn5.setStyle("-fx-font: 20 arial; -fx-base: #008080;");
 
-        EventHandler<ActionEvent> event5 = new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e)
-            {
+        btn1.setOnAction(e-> Play(primaryStage,imageview));
+        btn2.setOnAction(e-> LeaderBoard(primaryStage,imageview));
+        btn3.setOnAction(e-> Themes(primaryStage,imageview));
+        btn4.setOnAction(e-> Instructions(primaryStage,imageview));
+        btn5.setOnAction(e-> Platform.exit());
 
-                Platform.exit();
-
-            }
-
-        };
-        
-        // when button is pressed
-        btn5.setOnAction(event5);
 
         subroot.getChildren().addAll(imageview,text,btn1,btn2,btn3,btn4,btn5);
+        subroot.getChildren().addAll(snake_animation);
         
         Scene scene=new Scene(subroot,600,800);
 
@@ -239,17 +207,35 @@ public class Main extends Application {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+    protected Color colorPicker(){                  //Random Color Generator
+        int toss= rand.nextInt(6);
+        if(toss==0)
+            return Color.rgb(128,255,255);       //Sky Blue
+        else if(toss==1)
+            return Color.rgb(255,153,221);       //Pink
+        else if(toss==2)
+            return Color.rgb(153,255,153);       //Light Green
+        else if(toss==3)
+            return Color.rgb(255,209,179);       //Orange
+        else if(toss==4)
+            return Color.rgb(255,102,102);      //Light Red
+        else if(toss==5)
+            return Color.WHITE;
+        else return Color.YELLOW;
+    }
+
+    protected List<Blocks> createBlocks(){                      //Random Blocks Creator
+        List<Blocks> Blockslist=new ArrayList<Blocks>();
+        for(int i=0;i<5;i++){
+            int toss= rand.nextInt(3);
+            if(toss==0 || toss ==1)
+                Blockslist.add(new Blocks( (i+1)*5+i*100,100,100,90,10,colorPicker()));
+        }
+
+        return Blockslist;
+    }
 
     protected void Play(Stage primaryStage, ImageView imageview) {
-
-        AnimationTimer timer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                //update
-            }
-        };
-
-        timer.start();
 
         Pane play=new Pane();
 
@@ -260,23 +246,23 @@ public class Main extends Application {
 
         Circle snake[]=new Circle[4];
         for(int i=0;i<4;i++){
-            snake[i]=new Circle(300,620+i*20,10);
+            snake[i]=new Circle(270,620+i*20,10);
             snake[i].setFill(Color.WHITE);
         }
-        
 
-        Blocks block1 = new Blocks(10,100,100,100,10,Color.YELLOW);
-        Blocks block2 = new Blocks(115,100,100,100,10,Color.YELLOW);
-        Blocks block3 = new Blocks(325,100,100,100,10,Color.YELLOW);
-        Blocks block4 = new Blocks(430,100,100,100,10,Color.YELLOW);
+
+        List <Blocks> Blockslist = createBlocks();
 
         Timeline timeline = new Timeline(new KeyFrame(
                 Duration.millis(45),
                 ae -> {
-                    block1.moveDown();
-                    block2.moveDown();
-                    block3.moveDown();
-                    block4.moveDown();
+                     for(int i=0;i<Blockslist.size();i++){
+                         Blockslist.get(i).moveDown();
+                         if(Blockslist.get(i).getBoundsInParent().intersects(snake[0].getBoundsInParent())){    //Collision Check
+                            // snake[i].setFill(Color.YELLOW);
+                             play.getChildren().remove(Blockslist.get(i));
+                         }
+                     }
                 }
 
          ));
@@ -284,42 +270,36 @@ public class Main extends Application {
         timeline.play();
 
 
+
         Button btn6=new Button("Quit Game");
-        btn6.setLayoutX(220);
+        btn6.setLayoutX(190);
         btn6.setLayoutY(730);
         btn6.setMinSize(160, 40);
         btn6.setStyle("-fx-font: 20 arial; -fx-base: #87CEFA;");
 
-        EventHandler<ActionEvent> event6 = new EventHandler<ActionEvent>() {
+        btn6.setOnAction(e-> Menu(primaryStage,imageview));
 
-            public void handle(ActionEvent e)
-            {
-                Menu(primaryStage, imageview);
-
-            }
-        };
-
-
-        // when button is pressed
-        btn6.setOnAction(event6);
-
-        play.getChildren().setAll(blackBackground,btn6,block1,block2,block3,block4);
+        play.getChildren().setAll(blackBackground,btn6);
         play.getChildren().addAll(snake);
+        play.getChildren().addAll(Blockslist);
 
-        Scene scene=new Scene(play,600,800);
+        Scene scene=new Scene(play,530,800);
 
         scene.setOnKeyPressed(e-> {
 
             switch(e.getCode()){
 
                 case A :
+                    if(snake[0].getCenterX()>10){
                     for(int i=0;i<4;i++){
                         snake[i].setCenterX(snake[i].getCenterX()-10);
-                    }
+                    }}
                     break;
                 case D :
+                    if(snake[0].getCenterX()<520){
                     for(int i=0;i<4;i++) {
                         snake[i].setCenterX(snake[i].getCenterX() + 10);
+                    }
                     }
                     break;
 
@@ -369,18 +349,7 @@ public class Main extends Application {
         btn6.setMinSize(160, 40);
         btn6.setStyle("-fx-font: 20 arial; -fx-base: #87CEFA;");
 
-        EventHandler<ActionEvent> event6 = new EventHandler<ActionEvent>() {
-
-            public void handle(ActionEvent e)
-            {
-                Menu(primaryStage, imageview);
-
-            }
-        };
-
-        // when button is pressed
-        btn6.setOnAction(event6);
-
+        btn6.setOnAction(e-> Menu(primaryStage,imageview));
 
         Rectangle r = new Rectangle();
         r.setX(50);
@@ -420,17 +389,7 @@ public class Main extends Application {
         btn6.setMinSize(160, 40);
         btn6.setStyle("-fx-font: 20 arial; -fx-base: #87CEFA;");
 
-        EventHandler<ActionEvent> event6 = new EventHandler<ActionEvent>() {
-
-            public void handle(ActionEvent e)
-            {
-                Menu(primaryStage, imageview);
-
-            }
-        };
-        
-        // when button is pressed
-        btn6.setOnAction(event6);
+        btn6.setOnAction(e-> Menu(primaryStage,imageview));
 
         leaderboard.getChildren().setAll(blackBackground,comingSoon,btn6);
 
@@ -463,16 +422,7 @@ public class Main extends Application {
         btn6.setMinSize(160, 40);
         btn6.setStyle("-fx-font: 20 arial; -fx-base: #87CEFA;");
 
-        EventHandler<ActionEvent> event6 = new EventHandler<ActionEvent>() {
-
-            public void handle(ActionEvent e)
-            {
-                Menu(primaryStage, imageview);
-
-            }
-        };
-        // when button is pressed
-        btn6.setOnAction(event6);
+        btn6.setOnAction(e-> Menu(primaryStage,imageview));
 
         themes.getChildren().setAll(blackBackground,comingSoon,btn6);
 
@@ -482,6 +432,9 @@ public class Main extends Application {
 
 
     }
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+
 
     public static void main(String[] args) {
 
