@@ -205,7 +205,7 @@ public class Main extends Application {
 
     }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
     protected Color colorPicker(){                  //Random Color Generator
         int toss= rand.nextInt(6);
@@ -224,12 +224,12 @@ public class Main extends Application {
         else return Color.YELLOW;
     }
 
-    protected List<Blocks> createBlocks(){                      //Random Blocks Creator
-        List<Blocks> Blockslist=new ArrayList<Blocks>();
+    protected List<Block> createBlocks(){                      //Random Blocks Creator
+        List<Block> Blockslist=new ArrayList<Block>();
         for(int i=0;i<5;i++){
             int toss= rand.nextInt(3);
             if(toss==0 || toss ==1)
-                Blockslist.add(new Blocks( (i+1)*5+i*100,100,100,90,10,colorPicker()));
+                Blockslist.add(new Block( (i+1)*5+i*100,100,100,90,10,colorPicker()));
         }
 
         return Blockslist;
@@ -251,7 +251,7 @@ public class Main extends Application {
         }
 
 
-        List <Blocks> Blockslist = createBlocks();
+        List <Block> Blockslist = createBlocks();
 
         Timeline timeline = new Timeline(new KeyFrame(
                 Duration.millis(45),
@@ -268,8 +268,6 @@ public class Main extends Application {
          ));
         timeline.setCycleCount(100);
         timeline.play();
-
-
 
         Button btn6=new Button("Quit Game");
         btn6.setLayoutX(190);
@@ -291,17 +289,34 @@ public class Main extends Application {
 
                 case A :
                     if(snake[0].getCenterX()>10){
-                    for(int i=0;i<4;i++){
-                        snake[i].setCenterX(snake[i].getCenterX()-10);
-                    }}
+                    	for(int i=0;i<4;i++){
+                        	snake[i].setCenterX(snake[i].getCenterX()-10);
+                    	}
+                    }
                     break;
                 case D :
                     if(snake[0].getCenterX()<520){
-                    for(int i=0;i<4;i++) {
-                        snake[i].setCenterX(snake[i].getCenterX() + 10);
-                    }
+                    	for(int i=0;i<4;i++) {
+                    		snake[i].setCenterX(snake[i].getCenterX() + 10);
+                    	}
                     }
                     break;
+                case LEFT :
+                    if(snake[0].getCenterX()>10){
+                    	for(int i=0;i<4;i++){
+                    		snake[i].setCenterX(snake[i].getCenterX()-10);
+                    	}
+                    }
+                    break;
+                case RIGHT :
+                    if(snake[0].getCenterX()<520){
+                    	for(int i=0;i<4;i++) {
+                    		snake[i].setCenterX(snake[i].getCenterX() + 10);
+                    	}
+                    }
+                    break;
+                default:
+                	break;
 
             }});
 
@@ -310,9 +325,7 @@ public class Main extends Application {
 
     }
 
-
-
-//////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
 
     protected void Instructions(Stage primaryStage, ImageView imageview) {
         Pane instructions=new Pane();
@@ -433,8 +446,6 @@ public class Main extends Application {
 
     }
     //////////////////////////////////////////////////////////////////////////////////////////
-
-
 
     public static void main(String[] args) {
 
