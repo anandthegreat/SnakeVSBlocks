@@ -8,8 +8,6 @@ public class Blocks extends Rectangle {
     public Blocks(int x, int y, int w, int h, int blockValue, Color color) {
 
         super(w, h, color);
-        super.setArcHeight(10);
-        super.setArcHeight(20);
         this.blockValue = blockValue;
         setTranslateX(x);
         setTranslateY(y);
