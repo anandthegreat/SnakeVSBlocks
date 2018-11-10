@@ -4,7 +4,9 @@ import javafx.scene.shape.Rectangle;
 
 public class Block extends Rectangle {
     private int blockValue;                     		//number written on the block
-
+    private boolean alive;
+    private double x;
+    private double y;
     public Block(int x, int y, int w, int h, int blockValue, Color color) {
 
         super(w, h, color);
@@ -13,24 +15,31 @@ public class Block extends Rectangle {
         this.blockValue = blockValue;
         setTranslateX(x);
         setTranslateY(y);
-//        this.setArcHeight(25);
-//        this.setArcWidth(25);
+        setAlive(true);
+        this.x=x;
+        this.y=y;
 
     }
     public void setblockValue(int blockValue) {
         this.blockValue=blockValue;
     }
-    void moveLeft() {
-        setTranslateX(getTranslateX() - 5);
+    
+    void moveDown(double speed) {
+    	setManualY(getTranslateY()+1+speed);
+    	setTranslateY(getTranslateY() + 1 + speed);
+        
     }
-    void moveRight() { 
-    	setTranslateX(getTranslateX() + 5); 
-    }
-    void moveUp() {
-        setTranslateY(getTranslateY() - 5);
-    }
-    void moveDown() {
-        setTranslateY(getTranslateY() + 5);
-    }
+	public boolean getAlive() {
+		return alive;
+	}
+	public void setAlive(boolean alive) {
+		this.alive = alive;
+	}
+	public double getManualY() {
+			return y;
+	}
+	public void setManualY(double relativeY) {
+		this.y=relativeY;
+	}
 
 }

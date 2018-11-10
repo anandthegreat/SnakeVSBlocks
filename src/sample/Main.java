@@ -28,6 +28,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.layout.Pane;
 
 import java.util.ArrayList;
@@ -37,8 +38,14 @@ import java.util.concurrent.BlockingDeque;
 
 public class Main extends Application {
 
-    double t=0;  //for increasing time
+    double speed=0;  //for increasing speed 
     Random rand=new Random();
+    Integer score=0;		// player's score
+    private List<Block> blocks=new ArrayList<Block>();
+    Text Score=new Text("Score : "+score.toString());		// Score Board
+    Circle snake[]=new Circle[4];
+    
+    
     ///////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -49,7 +56,9 @@ public class Main extends Application {
         Image image = new Image("file:snake-vs-block.png");
         ImageView imageview=new ImageView(image);
         imageview.setFitHeight(820);    imageview.setFitWidth(620);
-
+        
+        
+        
         //Instantiating the Glow class
         Glow glow = new Glow();
         //setting level of the glow effect
@@ -106,10 +115,11 @@ public class Main extends Application {
         fadeTransition.setToValue(0.6);
         fadeTransition.setCycleCount(Animation.INDEFINITE);
         fadeTransition.play();
-
+        
         group.getChildren().addAll(imageview,text,btn);
         group.getChildren().addAll(snake_animation);
-
+        
+        
         Scene scene = new Scene(group, 600,800);
         
         primaryStage.setTitle("SnakeVsBlock");
@@ -221,18 +231,69 @@ public class Main extends Application {
             return Color.rgb(255,102,102);      //Light Red
         else if(toss==5)
             return Color.WHITE;
-        else return Color.YELLOW;
+        else 
+        	return Color.YELLOW;
     }
 
-    protected List<Block> createBlocks(){                      //Random Blocks Creator
-        List<Block> Blockslist=new ArrayList<Block>();
-        for(int i=0;i<5;i++){
-            int toss= rand.nextInt(3);
-            if(toss==0 || toss ==1)
-                Blockslist.add(new Block( (i+1)*5+i*100,100,100,90,10,colorPicker()));
-        }
-
-        return Blockslist;
+//    protected List<Block> createBlocks(){                      //Random Blocks Creator
+//        List<Block> Blockslist=new ArrayList<Block>();
+//        for(int i=0;i<5;i++){
+//            int toss= rand.nextInt(3);
+//            if(toss==0 || toss ==1)
+//                Blockslist.add(new Block( (i+1)*5+i*100,100,100,90,10,colorPicker()));
+//        }
+//
+//        return Blockslist;
+//    }
+    
+    protected void gameplay(Pane play) {									
+    		Score.setText("Score : "+score.toString());
+    		
+    		for(int i=0;i<blocks.size();i++) {
+    			blocks.get(i).moveDown(speed);
+    		}
+    		if(blocks.size()<5) {
+    			int addRandomNum=rand.nextInt(5-blocks.size()+1);
+    			for(int i=0;i<addRandomNum;i++) {
+    				int x=rand.nextInt(9);
+        			Block b=new Block(x*50,50,100,100,5,colorPicker());
+        			blocks.add(b);
+        			play.getChildren().add(b);
+        			System.out.println("Block Size : "+ blocks.size());
+    			}
+    		}
+    		checkCollision();
+    		checkBoundary();
+//    		System.out.println(blocks[0].getY()+" ,,,,"+blocks[0].getTranslateY());
+//    		speed=speed+0.01;
+    }
+    
+    protected void checkCollision() {
+    	for(int i=0;i<blocks.size();i++) {
+    		if(blocks.get(i).getBoundsInParent().intersects(snake[0].getBoundsInParent()) & blocks.get(i).getAlive()==true){    //Collision Check
+// 					snake[i].setFill(Color.YELLOW);
+//    	            play.getChildren().remove(Blockslist.get(i));
+    	    		score=score+1;
+    	    		blocks.get(i).setAlive(false);
+    	    		blocks.get(i).setVisible(false);
+    	    		blocks.remove(i);
+//    	    		System.gc();
+    	       }
+    	}
+    	
+    }
+    
+    protected void checkBoundary() {									
+    	for(int i=0;i<blocks.size();i++) {
+//    		System.out.println(blocks.get(i).getManualY());
+    		if(blocks.get(i).getManualY()>800) {						// checking if block passed the snake
+    			
+    			blocks.get(i).setVisible(false);
+    			blocks.get(i).setAlive(false);
+    			blocks.remove(i);
+    			
+    		}
+    	}
     }
 
     protected void Play(Stage primaryStage, ImageView imageview) {
@@ -244,30 +305,40 @@ public class Main extends Application {
         blackBackground.setFitHeight(820);
         blackBackground.setFitWidth(620);
 
-        Circle snake[]=new Circle[4];
+        
         for(int i=0;i<4;i++){
             snake[i]=new Circle(270,620+i*20,10);
             snake[i].setFill(Color.WHITE);
         }
+        
+//        int position[]= {10,20,30,40,50,60,70,80};
+        AnimationTimer A = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+//            	Score.setText("Score : "+score.toString());
+            	gameplay(play);
+            }
+        };
+        A.start();
 
 
-        List <Block> Blockslist = createBlocks();
-
-        Timeline timeline = new Timeline(new KeyFrame(
-                Duration.millis(45),
-                ae -> {
-                     for(int i=0;i<Blockslist.size();i++){
-                         Blockslist.get(i).moveDown();
-                         if(Blockslist.get(i).getBoundsInParent().intersects(snake[0].getBoundsInParent())){    //Collision Check
-                            // snake[i].setFill(Color.YELLOW);
-                             play.getChildren().remove(Blockslist.get(i));
-                         }
-                     }
-                }
-
-         ));
-        timeline.setCycleCount(100);
-        timeline.play();
+//        List <Block> Blockslist = createBlocks();
+//
+//        Timeline timeline = new Timeline(new KeyFrame(
+//                Duration.millis(45),
+//                ae -> {
+//                     for(int i=0;i<Blockslist.size();i++){
+//                         Blockslist.get(i).moveDown();
+//                         if(Blockslist.get(i).getBoundsInParent().intersects(snake[0].getBoundsInParent())){    //Collision Check
+//                            // snake[i].setFill(Color.YELLOW);
+//                             play.getChildren().remove(Blockslist.get(i));
+//                         }
+//                     }
+//                }
+//
+//         ));
+//        timeline.setCycleCount(100);
+//        timeline.play();
 
         Button btn6=new Button("Quit Game");
         btn6.setLayoutX(190);
@@ -279,7 +350,22 @@ public class Main extends Application {
 
         play.getChildren().setAll(blackBackground,btn6);
         play.getChildren().addAll(snake);
-        play.getChildren().addAll(Blockslist);
+//        play.getChildren().addAll(Blockslist);
+//        blocks.add(new Block(300,50,100,100,5,colorPicker()));
+//        blocks.add(new Block(150,50,100,100,5,colorPicker()));
+        
+//        Rectangle Scoreboard=new Rectangle(120,40,Color.WHITE);
+//        Scoreboard.setX(20);
+//        Scoreboard.setY(10);
+//        Scoreboard.setOpacity(0.4);
+        
+        Score.setX(36);
+        Score.setY(44);
+        Score.setFill(Color.WHITE);
+        Score.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+        
+        play.getChildren().addAll(blocks);
+        play.getChildren().addAll(Score);
 
         Scene scene=new Scene(play,530,800);
 
