@@ -269,8 +269,9 @@ public class Main extends Application {
         for(int i=0;i<5;i++){
             int toss= rand.nextInt(3);
             if(toss==0 || toss ==1){
-                Blockslist.add(new Block( (i+1)*5+i*100,-100,100,90,rand.nextInt(20)+1,colorPicker()));
-                BlockText.add(new Text(String.valueOf(rand.nextInt(20)+1)));
+                int valueofNewBlock= rand.nextInt(20)+1;
+                Blockslist.add(new Block( (i+1)*5+i*100,-100,100,90,valueofNewBlock,colorPicker()));
+                BlockText.add(new Text(String.valueOf(valueofNewBlock)));
                 BlockText.get(BlockText.size()-1).setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 24));
                 BlockText.get(BlockText.size()-1).setX((i+1)*5+i*100+40);
                 BlockText.get(BlockText.size()-1).setY(-50);}
