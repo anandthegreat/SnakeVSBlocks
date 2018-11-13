@@ -3,6 +3,7 @@ package sample;
 import javafx.animation.*;
 import javafx.application.*;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.effect.Bloom;
@@ -43,6 +44,7 @@ public class Main extends Application {
     Random rand=new Random();
     Integer score=0;		// player's score
     private List<Block> blocks=new ArrayList<Block>();
+    private List<Text>  blockText= new ArrayList<Text>();
     Text Score=new Text("Score : "+score.toString());		// Score Board
     Circle snake[]=new Circle[5];
     
@@ -216,6 +218,7 @@ public class Main extends Application {
 
     /////////////////////////////////////////////////////////////////////////////////////////
 
+
     protected Color colorPicker(){                  //Random Color Generator
         int toss= rand.nextInt(6);
         if(toss==0)
@@ -233,31 +236,71 @@ public class Main extends Application {
         else 
         	return Color.YELLOW;
     }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    void moveText(Text text, double speed) {
 
-    protected List<Block> createBlocks(){                      //Random Blocks Creator
-        List<Block> Blockslist=new ArrayList<Block>();
-        for(int i=0;i<5;i++){
-            int toss= rand.nextInt(3);
-            if(toss==0 || toss ==1)
-                Blockslist.add(new Block( (i+1)*5+i*100,-100,100,90,10,colorPicker()));
+        text.setTranslateY(text.getTranslateY() + 1 + speed);
+
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public class blockAndText {                     //helper class for createBlocks to return shape of blocks
+        private List<Block> blockShape;             //as well as block value
+        private List<Text>  blockText;
+
+        public blockAndText(List<Block> blockShape, List<Text> blockText) {
+            this.blockShape = blockShape;
+            this.blockText = blockText;
         }
 
-        return Blockslist;
+        public List<Block> getShape() {
+            return blockShape;
+        }
+
+        public List<Text> getText() {
+            return blockText;
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    protected blockAndText createBlocks(){                      //Random Blocks Creator
+        List<Block> Blockslist=new ArrayList<Block>();
+        List<Text>  BlockText =new ArrayList<Text>();
+        for(int i=0;i<5;i++){
+            int toss= rand.nextInt(3);
+            if(toss==0 || toss ==1){
+                Blockslist.add(new Block( (i+1)*5+i*100,-100,100,90,rand.nextInt(20)+1,colorPicker()));
+                BlockText.add(new Text(String.valueOf(rand.nextInt(20)+1)));
+                BlockText.get(BlockText.size()-1).setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 24));
+                BlockText.get(BlockText.size()-1).setX((i+1)*5+i*100+40);
+                BlockText.get(BlockText.size()-1).setY(-50);}
+        }
+
+        return new blockAndText(Blockslist,BlockText);
     }
 
     int blockTimer=0;               // timer for creating new blocks on the screen
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected void gameplay(Pane play) {									
     		Score.setText("Score : "+score.toString());
     		for(int i=0;i<blocks.size();i++) {
     			blocks.get(i).moveDown(speed);
+    			moveText(blockText.get(i),speed);
+
     		}
              List<Block> newBlocks=null;            //so that it is automatically destroyed after each execution
+             List<Text>  newBlocksValue=null;
     		if(blockTimer%300==0) {
-    		    newBlocks= createBlocks();
+    		    blockAndText obj= createBlocks();
+    		    newBlocks= obj.blockShape;
+    		    newBlocksValue =obj.blockText;
     		    for(int i=0;i<newBlocks.size();i++){
     		        blocks.add(newBlocks.get(i));
-    		    play.getChildren().add(newBlocks.get(i));
+    		        blockText.add(newBlocksValue.get(i));
+    		         play.getChildren().add(newBlocks.get(i));
+    		         play.getChildren().add(newBlocksValue.get(i));
     		    }
     		}
     		checkCollision();
@@ -272,10 +315,14 @@ public class Main extends Application {
     		if(blocks.get(i).getBoundsInParent().intersects(snake[0].getBoundsInParent()) & blocks.get(i).getAlive()==true){    //Collision Check
 // 					snake[i].setFill(Color.YELLOW);
 //    	            play.getChildren().remove(Blockslist.get(i));
-    	    		score=score+1;
+    	    		score+=blocks.get(i).getblockValue();
     	    		blocks.get(i).setAlive(false);
     	    		blocks.get(i).setVisible(false);
     	    		blocks.remove(i);
+
+    	    		blockText.get(i).setVisible(false);
+    	    		blockText.remove(i);
+
 //    	    		System.gc();
     	       }
     	}
@@ -290,7 +337,9 @@ public class Main extends Application {
     			blocks.get(i).setVisible(false);
     			blocks.get(i).setAlive(false);
     			blocks.remove(i);
-    			
+                blockText.get(i).setVisible(false);
+                blockText.remove(i);
+
     		}
     	}
     }
