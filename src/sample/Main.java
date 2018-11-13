@@ -46,7 +46,7 @@ public class Main extends Application {
     private List<Block> blocks=new ArrayList<Block>();
     private List<Text>  blockText= new ArrayList<Text>();
     Text Score=new Text("Score : "+score.toString());		// Score Board
-    Circle snake[]=new Circle[5];
+    List<Circle> snake=new ArrayList<Circle>();
     
     
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -293,6 +293,7 @@ public class Main extends Application {
     		}
              List<Block> newBlocks=null;            //so that it is automatically destroyed after each execution
              List<Text>  newBlocksValue=null;
+             
     		if(blockTimer%300==0) {
     		    blockAndText obj= createBlocks();
     		    newBlocks= obj.blockShape;
@@ -303,25 +304,47 @@ public class Main extends Application {
     		         play.getChildren().add(newBlocks.get(i));
     		         play.getChildren().add(newBlocksValue.get(i));
     		    }
+
+                speed+=0.2;             // we have to sync speed with rate of fall of blocks
     		}
-    		checkCollision();
-    		checkBoundary();
+    		checkCollision(play);
+    		checkBoundary(play);
             blockTimer+=1;
+
 //    		System.out.println(blocks[0].getY()+" ,,,,"+blocks[0].getTranslateY());
 //    		speed=speed+0.01;
     }
-    
-    protected void checkCollision() {
+
+    int scoreTracker=0;             // to keep track of score to increase length of snake
+    protected void checkCollision(Pane play) {
     	for(int i=0;i<blocks.size();i++) {
-    		if(blocks.get(i).getBoundsInParent().intersects(snake[0].getBoundsInParent()) & blocks.get(i).getAlive()==true){    //Collision Check
+    		if(blocks.get(i).getBoundsInParent().intersects(snake.get(0).getBoundsInParent()) & blocks.get(i).getAlive()==true){    //Collision Check
 // 					snake[i].setFill(Color.YELLOW);
 //    	            play.getChildren().remove(Blockslist.get(i));
     	    		score+=blocks.get(i).getblockValue();
+                    if(snake.size()<18) {
+                        if (score - scoreTracker > 20)             // This is of course not the condition to increase snake's length
+                        {                            // These things will be used when coins are added
+
+                            for (int j = 0; j < snake.size(); j++) {
+                                snake.get(j).setCenterY(snake.get(j).getCenterY() - 20);
+                            }
+
+                            snake.add(new Circle(snake.get(snake.size() - 1).getCenterX(), snake.get(snake.size() - 1).getCenterY() + 20, 10));
+                            snake.get(snake.size() - 1).setFill(Color.YELLOW);
+                            play.getChildren().add(snake.get(snake.size() - 1));
+                            scoreTracker += 20;
+                        }
+                    }
+
     	    		blocks.get(i).setAlive(false);
     	    		blocks.get(i).setVisible(false);
+    	    		play.getChildren().remove(blocks.get(i));           //may be wrong or cause of an error
     	    		blocks.remove(i);
 
+
     	    		blockText.get(i).setVisible(false);
+    	    		play.getChildren().remove(blockText.get(i));           //may be wrong or cause of an error
     	    		blockText.remove(i);
 
 //    	    		System.gc();
@@ -330,15 +353,17 @@ public class Main extends Application {
     	
     }
     
-    protected void checkBoundary() {									
+    protected void checkBoundary(Pane play) {
     	for(int i=0;i<blocks.size();i++) {
 //    		System.out.println(blocks.get(i).getManualY());
     		if(blocks.get(i).getManualY()>800) {						// checking if block passed the snake
     			
     			blocks.get(i).setVisible(false);
     			blocks.get(i).setAlive(false);
+                play.getChildren().remove(blocks.get(i));           //may be wrong or cause of an error
     			blocks.remove(i);
                 blockText.get(i).setVisible(false);
+                play.getChildren().remove(blockText.get(i));           //may be wrong or cause of an error
                 blockText.remove(i);
 
     		}
@@ -354,10 +379,10 @@ public class Main extends Application {
         blackBackground.setFitHeight(820);
         blackBackground.setFitWidth(620);
 
-        snake[0]=new Circle(270,610,1);
+        snake.add(new Circle(270,610,1));
         for(int i=1;i<5;i++){
-            snake[i]=new Circle(270,600+i*20,10);
-            snake[i].setFill(Color.WHITE);
+            snake.add(new Circle(270,600+i*20,10));
+            snake.get(i).setFill(Color.YELLOW);
         }
         
 //        int position[]= {10,20,30,40,50,60,70,80};
@@ -397,30 +422,30 @@ public class Main extends Application {
             switch(e.getCode()){
 
                 case A :
-                    if(snake[0].getCenterX()>10){
-                    	for(int i=0;i<5;i++){
-                        	snake[i].setCenterX(snake[i].getCenterX()-10);
+                    if(snake.get(0).getCenterX()>10){
+                    	for(int i=0;i<snake.size();i++){
+                        	snake.get(i).setCenterX(snake.get(i).getCenterX()-10);
                     	}
                     }
                     break;
                 case D :
-                    if(snake[0].getCenterX()<520){
-                    	for(int i=0;i<5;i++) {
-                    		snake[i].setCenterX(snake[i].getCenterX() + 10);
+                    if(snake.get(0).getCenterX()<520){
+                    	for(int i=0;i<snake.size();i++) {
+                            snake.get(i).setCenterX(snake.get(i).getCenterX()+10);
                     	}
                     }
                     break;
                 case LEFT :
-                    if(snake[0].getCenterX()>10){
-                    	for(int i=0;i<5;i++){
-                    		snake[i].setCenterX(snake[i].getCenterX()-10);
+                    if(snake.get(0).getCenterX()>10){
+                    	for(int i=0;i<snake.size();i++){
+                            snake.get(i).setCenterX(snake.get(i).getCenterX()-10);
                     	}
                     }
                     break;
                 case RIGHT :
-                    if(snake[0].getCenterX()<520){
-                    	for(int i=0;i<5;i++) {
-                    		snake[i].setCenterX(snake[i].getCenterX() + 10);
+                    if(snake.get(0).getCenterX()<520){
+                    	for(int i=0;i<snake.size();i++) {
+                            snake.get(i).setCenterX(snake.get(i).getCenterX()+10);
                     	}
                     }
                     break;
