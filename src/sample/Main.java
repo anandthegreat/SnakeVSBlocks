@@ -31,6 +31,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.layout.Pane;
 
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -43,7 +44,7 @@ public class Main extends Application {
     Integer score=0;		// player's score
     private List<Block> blocks=new ArrayList<Block>();
     Text Score=new Text("Score : "+score.toString());		// Score Board
-    Circle snake[]=new Circle[4];
+    Circle snake[]=new Circle[5];
     
     
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -56,8 +57,6 @@ public class Main extends Application {
         Image image = new Image("file:snake-vs-block.png");
         ImageView imageview=new ImageView(image);
         imageview.setFitHeight(820);    imageview.setFitWidth(620);
-        
-        
         
         //Instantiating the Glow class
         Glow glow = new Glow();
@@ -235,35 +234,35 @@ public class Main extends Application {
         	return Color.YELLOW;
     }
 
-//    protected List<Block> createBlocks(){                      //Random Blocks Creator
-//        List<Block> Blockslist=new ArrayList<Block>();
-//        for(int i=0;i<5;i++){
-//            int toss= rand.nextInt(3);
-//            if(toss==0 || toss ==1)
-//                Blockslist.add(new Block( (i+1)*5+i*100,100,100,90,10,colorPicker()));
-//        }
-//
-//        return Blockslist;
-//    }
-    
+    protected List<Block> createBlocks(){                      //Random Blocks Creator
+        List<Block> Blockslist=new ArrayList<Block>();
+        for(int i=0;i<5;i++){
+            int toss= rand.nextInt(3);
+            if(toss==0 || toss ==1)
+                Blockslist.add(new Block( (i+1)*5+i*100,-100,100,90,10,colorPicker()));
+        }
+
+        return Blockslist;
+    }
+
+    int blockTimer=0;               // timer for creating new blocks on the screen
+
     protected void gameplay(Pane play) {									
     		Score.setText("Score : "+score.toString());
-    		
     		for(int i=0;i<blocks.size();i++) {
     			blocks.get(i).moveDown(speed);
     		}
-    		if(blocks.size()<5) {
-    			int addRandomNum=rand.nextInt(5-blocks.size()+1);
-    			for(int i=0;i<addRandomNum;i++) {
-    				int x=rand.nextInt(9);
-        			Block b=new Block(x*50,50,100,100,5,colorPicker());
-        			blocks.add(b);
-        			play.getChildren().add(b);
-        			System.out.println("Block Size : "+ blocks.size());
-    			}
+             List<Block> newBlocks=null;            //so that it is automatically destroyed after each execution
+    		if(blockTimer%300==0) {
+    		    newBlocks= createBlocks();
+    		    for(int i=0;i<newBlocks.size();i++){
+    		        blocks.add(newBlocks.get(i));
+    		    play.getChildren().add(newBlocks.get(i));
+    		    }
     		}
     		checkCollision();
     		checkBoundary();
+            blockTimer+=1;
 //    		System.out.println(blocks[0].getY()+" ,,,,"+blocks[0].getTranslateY());
 //    		speed=speed+0.01;
     }
@@ -305,9 +304,9 @@ public class Main extends Application {
         blackBackground.setFitHeight(820);
         blackBackground.setFitWidth(620);
 
-        
-        for(int i=0;i<4;i++){
-            snake[i]=new Circle(270,620+i*20,10);
+        snake[0]=new Circle(270,610,1);
+        for(int i=1;i<5;i++){
+            snake[i]=new Circle(270,600+i*20,10);
             snake[i].setFill(Color.WHITE);
         }
         
@@ -322,24 +321,6 @@ public class Main extends Application {
         A.start();
 
 
-//        List <Block> Blockslist = createBlocks();
-//
-//        Timeline timeline = new Timeline(new KeyFrame(
-//                Duration.millis(45),
-//                ae -> {
-//                     for(int i=0;i<Blockslist.size();i++){
-//                         Blockslist.get(i).moveDown();
-//                         if(Blockslist.get(i).getBoundsInParent().intersects(snake[0].getBoundsInParent())){    //Collision Check
-//                            // snake[i].setFill(Color.YELLOW);
-//                             play.getChildren().remove(Blockslist.get(i));
-//                         }
-//                     }
-//                }
-//
-//         ));
-//        timeline.setCycleCount(100);
-//        timeline.play();
-
         Button btn6=new Button("Quit Game");
         btn6.setLayoutX(190);
         btn6.setLayoutY(730);
@@ -350,14 +331,6 @@ public class Main extends Application {
 
         play.getChildren().setAll(blackBackground,btn6);
         play.getChildren().addAll(snake);
-//        play.getChildren().addAll(Blockslist);
-//        blocks.add(new Block(300,50,100,100,5,colorPicker()));
-//        blocks.add(new Block(150,50,100,100,5,colorPicker()));
-        
-//        Rectangle Scoreboard=new Rectangle(120,40,Color.WHITE);
-//        Scoreboard.setX(20);
-//        Scoreboard.setY(10);
-//        Scoreboard.setOpacity(0.4);
         
         Score.setX(36);
         Score.setY(44);
@@ -375,28 +348,28 @@ public class Main extends Application {
 
                 case A :
                     if(snake[0].getCenterX()>10){
-                    	for(int i=0;i<4;i++){
+                    	for(int i=0;i<5;i++){
                         	snake[i].setCenterX(snake[i].getCenterX()-10);
                     	}
                     }
                     break;
                 case D :
                     if(snake[0].getCenterX()<520){
-                    	for(int i=0;i<4;i++) {
+                    	for(int i=0;i<5;i++) {
                     		snake[i].setCenterX(snake[i].getCenterX() + 10);
                     	}
                     }
                     break;
                 case LEFT :
                     if(snake[0].getCenterX()>10){
-                    	for(int i=0;i<4;i++){
+                    	for(int i=0;i<5;i++){
                     		snake[i].setCenterX(snake[i].getCenterX()-10);
                     	}
                     }
                     break;
                 case RIGHT :
                     if(snake[0].getCenterX()<520){
-                    	for(int i=0;i<4;i++) {
+                    	for(int i=0;i<5;i++) {
                     		snake[i].setCenterX(snake[i].getCenterX() + 10);
                     	}
                     }
@@ -469,6 +442,7 @@ public class Main extends Application {
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
+
     protected void LeaderBoard(Stage primaryStage, ImageView imageview) {
         Pane leaderboard=new Pane();
 
@@ -476,11 +450,7 @@ public class Main extends Application {
         ImageView blackBackground=new ImageView(image);
         blackBackground.setFitHeight(820);
         blackBackground.setFitWidth(620);
-        
-        Image temp = new Image("file:coming-soon.jpg");								// added coming-soon image
-        ImageView comingSoon=new ImageView(temp);
-        comingSoon.setFitHeight(820);
-        comingSoon.setFitWidth(620);
+
 
         Button btn6=new Button("Back to Menu");
         btn6.setLayoutX(220);
@@ -490,7 +460,7 @@ public class Main extends Application {
 
         btn6.setOnAction(e-> Menu(primaryStage,imageview));
 
-        leaderboard.getChildren().setAll(blackBackground,comingSoon,btn6);
+        leaderboard.getChildren().setAll(blackBackground,btn6);
 
         Scene scene=new Scene(leaderboard,600,800);
 
