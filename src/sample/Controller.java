@@ -31,6 +31,7 @@ public class Controller {
     List<Circle> snake=new ArrayList<Circle>();
     int blockTimer;                          // timer for creating new blocks on the screen
     int scoreTracker;                        // to keep track of score to increase length of snake
+    boolean paused;
 
     public Controller(){
         this.speed=0;
@@ -39,6 +40,7 @@ public class Controller {
         this.blocks=new ArrayList<Block>();
         this.blockText=new ArrayList<Text>();
         this.Score=new Text("Score : "+score.toString());
+        this.paused=false;
     }
 
 
@@ -231,6 +233,18 @@ public class Controller {
         btn7.setLayoutY(20);
         btn7.setMinSize(30, 30);
         btn7.setStyle("-fx-font: 24 arial; -fx-base: #FE2E2E;");
+        btn7.setOnAction(e-> {
+            if(this.paused==false)
+            {   this.paused=true;
+                btn7.setText("|>");
+                A.stop();
+            }
+            else if(this.paused==true){
+                this.paused=false;
+                btn7.setText("| |");
+                A.start();
+            }
+        });
 
 //        HBox topPanel = new HBox(5);                //Horizontal strip in the upper side for pause,stop and score
 //        topPanel.setPadding(new Insets(10));
