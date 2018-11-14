@@ -1,42 +1,29 @@
 package sample;
 
-public class Player {
+import java.io.Serializable;
 
-    private String name;
-    private int age;
-    private String gender;
+public class Player implements Serializable {
+
     private int score;
+    private int snakeBalls;
 
-    Player(String n, int a, String g, int s){
-        setName(n);
-        setAge(a);
-        setGender(g);
+    Player(int s){
         setScore(s);
     }
 
-    public String getName() {
-        return name;
-    }
-    public int getAge() {
-        return age;
-    }
-    public String getGender() {
-        return gender;
-    }
     public int getScore() {
         return score;
     }
 
-    public void setName(String name) {
-        this.name=name;
-    }
-    public void setAge(int age) {
-        this.age=age;
-    }
-    public void setGender(String gender) {
-        this.gender=gender;
-    }
     public void setScore(int score) {
         this.score=score;
+    }
+
+    public int getSnakeBalls(){
+        return snakeBalls;
+    }
+
+    public void setSnakeBalls(int snakeBalls){
+        this.snakeBalls=snakeBalls;
     }
 }
