@@ -45,7 +45,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
 
-        Pane group = new Pane();                                                      //Changed root to group
+        Pane group = new Pane();
         primaryStage.getIcons().add(new Image("file:Snake-icon.png"));;
 
         Image image = new Image("file:snake-vs-block.png");
@@ -116,7 +116,6 @@ public class Main extends Application {
 
     }
 
-
     ///////////////////////////////////////////////////////////////////////////////////
 
     public void Menu(Stage primaryStage, ImageView imageview) {
@@ -185,14 +184,20 @@ public class Main extends Application {
         btn5.setStyle("-fx-font: 20 arial; -fx-base: #008080;");
 
         btn1.setOnAction(e-> {
-            Controller newgame=new Controller();
-            newgame.Play(primaryStage,imageview);
+            Controller obj=new Controller();
+            obj.Play(primaryStage,imageview);
         });
-        btn2.setOnAction(e-> LeaderBoard(primaryStage,imageview));
-        btn3.setOnAction(e-> Themes(primaryStage,imageview));
+        btn2.setOnAction(e-> {
+            LeaderBoard obj=new LeaderBoard();
+            obj.leaderboard(primaryStage,imageview);
+        });
+        btn3.setOnAction(e-> {
+            Themes obj=new Themes();
+            obj.themes(primaryStage,imageview);
+        });
         btn4.setOnAction(e-> {
-            Instructions howToPlay=new Instructions();
-            howToPlay.instructions(primaryStage,imageview);
+            Instructions obj=new Instructions();
+            obj.instructions(primaryStage,imageview);
         });
         btn5.setOnAction(e-> Platform.exit());
 
@@ -207,66 +212,6 @@ public class Main extends Application {
     }
 
     //////////////////////////////////////////////////////////////////////////////////////
-
-    protected void LeaderBoard(Stage primaryStage, ImageView imageview) {
-        Pane leaderboard=new Pane();
-
-        Image image = new Image("file:blackBackground.png");
-        ImageView blackBackground=new ImageView(image);
-        blackBackground.setFitHeight(820);
-        blackBackground.setFitWidth(620);
-
-
-        Button btn6=new Button("Back to Menu");
-        btn6.setLayoutX(220);
-        btn6.setLayoutY(730);
-        btn6.setMinSize(160, 40);
-        btn6.setStyle("-fx-font: 20 arial; -fx-base: #87CEFA;");
-
-        btn6.setOnAction(e-> Menu(primaryStage,imageview));
-
-        leaderboard.getChildren().setAll(blackBackground,btn6);
-
-        Scene scene=new Scene(leaderboard,600,800);
-
-
-        primaryStage.setScene(scene);
-
-
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////////////
-
-    protected void Themes(Stage primaryStage, ImageView imageview) {
-        Pane themes=new Pane();
-
-        Image image = new Image("file:blackBackground.png");
-        ImageView blackBackground=new ImageView(image);
-        blackBackground.setFitHeight(820);
-        blackBackground.setFitWidth(620);
-
-        Image temp = new Image("file:coming-soon.jpg");
-        ImageView comingSoon=new ImageView(temp);
-        comingSoon.setFitHeight(820);
-        comingSoon.setFitWidth(620);
-
-        Button btn6=new Button("Back to Menu");
-        btn6.setLayoutX(220);
-        btn6.setLayoutY(730);
-        btn6.setMinSize(160, 40);
-        btn6.setStyle("-fx-font: 20 arial; -fx-base: #87CEFA;");
-
-        btn6.setOnAction(e-> Menu(primaryStage,imageview));
-
-        themes.getChildren().setAll(blackBackground,comingSoon,btn6);
-
-        Scene scene=new Scene(themes,600,800);
-
-        primaryStage.setScene(scene);
-
-
-    }
-    //////////////////////////////////////////////////////////////////////////////////////////
 
     public static void main(String[] args) {
 

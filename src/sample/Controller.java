@@ -127,6 +127,7 @@ public class Controller {
                 blockText.add(newBlocksValue.get(i));
                 play.getChildren().add(newBlocks.get(i));
                 play.getChildren().add(newBlocksValue.get(i));
+
             }
 
             speed+=0.15;
@@ -225,7 +226,9 @@ public class Controller {
         btn6.setLayoutY(20);
         btn6.setMinSize(30, 30);
         btn6.setStyle("-fx-font: 24 arial; -fx-base: #FE2E2E;");
-        btn6.setOnAction(e-> obj.Menu(primaryStage,imageview));
+        btn6.setOnAction(e-> {
+            obj.Menu(primaryStage,imageview);
+        });
 
         Button btn7=new Button("| |");                  //Pause Button
         btn7.setLayoutX(170);
