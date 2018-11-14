@@ -1,12 +1,32 @@
 package sample;
 
+import java.util.Random;
+
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.text.Text;
+
 public class Token {
     private String name;
-
-    Token(String n){
+    protected ImageView photo;
+    private double y;
+    Token(String n,String p){
         setName(n);
+        setPhoto(p);
     }
-
+    
+    public void setPhoto(String location) {
+    	Image image = new Image(location);
+    	photo=new ImageView(image);
+    	Random rand=new Random();
+    	photo.setX(rand.nextInt(500));
+    	photo.setY(-100);
+    	photo.setFitWidth(50);
+    	photo.setFitHeight(50);
+    }
+    public ImageView getPhoto() {
+    	return photo;
+    }
     public String getName() {
         return name;
     }
@@ -14,7 +34,18 @@ public class Token {
     public void setName(String name) {
         this.name = name;
     }
-
+    
+    void moveDown(double speed) {
+    	setManualY(photo.getTranslateY()+1+speed);
+    	photo.setTranslateY(photo.getTranslateY() + 1 + speed);
+    }
+    
+    public double getManualY() {
+		return y;
+    }
+    public void setManualY(double relativeY) {
+    	this.y=relativeY;
+    }
 }
 
 
@@ -22,8 +53,8 @@ class Magnet extends Token{
 
     private int timelimit;
     private int range;
-    Magnet(String n) {
-        super(n);
+    Magnet(String n, String loc) {
+        super(n,loc);
         setTimelimit(5);
         setRange(100);
     }
@@ -54,8 +85,8 @@ class Shield extends Token{
 
     private int timelimit;
 
-    Shield(String n) {
-        super(n);
+    Shield(String n,String loc ) {
+        super(n,loc);
         setTimelimit(5);
     }
 
@@ -75,8 +106,8 @@ class Shield extends Token{
 
 class Destroy_Blocks extends Token{
 
-    Destroy_Blocks(String n) {
-        super(n);
+    Destroy_Blocks(String n, String loc) {
+        super(n, loc);
     }
 
     public void destroyBlocks() {
@@ -87,9 +118,14 @@ class Destroy_Blocks extends Token{
 
 class Ball extends Token{
     private int value;
-
-    Ball(String n) {
-        super(n);
+    private Text ballT;
+    Ball(String n, String loc) {
+        super(n,loc);
+        Random R=new Random();
+        value=R.nextInt(20);
+        ballT=new Text(String.valueOf(value));
+        ballT.setX(photo.getX()+18);
+        ballT.setY(photo.getY()+20);
     }
 
     public int getValue() {
@@ -99,9 +135,14 @@ class Ball extends Token{
     public void setValue(int value) {
         this.value = value;
     }
-
-    public void increaseBalls() {
-
+    void moveBallText(double speed) {
+        ballT.setTranslateY(ballT.getTranslateY() + 1 + speed);
+    }
+    public Text getballT() {
+    	return ballT;
+    }
+    public void increaseBalls(Snake snake) {
+    	snake.setNumBalls(value);
     }
 
 }

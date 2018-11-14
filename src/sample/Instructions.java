@@ -65,7 +65,5 @@ public class Instructions {
         Scene scene=new Scene(instr,600,800);
 
         primaryStage.setScene(scene);
-
-
     }
 }
