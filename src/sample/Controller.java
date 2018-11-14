@@ -29,7 +29,6 @@ public class Controller {
     private List<Text>  blockText;
     Text Score;                             	// Score Board
     List<Circle> snake=new ArrayList<Circle>();
-    int blockTimer;                          // timer for creating new blocks on the screen
     int scoreTracker;                        // to keep track of score to increase length of snake
     boolean paused;
 
@@ -130,7 +129,7 @@ public class Controller {
                 play.getChildren().add(newBlocksValue.get(i));
             }
 
-            speed+=0.15;             // we have to sync speed with rate of fall of blocks
+            speed+=0.15;
             System.out.println(speed);
         }
         checkCollision(play);
@@ -161,12 +160,12 @@ public class Controller {
 
                 blocks.get(i).setAlive(false);
                 blocks.get(i).setVisible(false);
-                play.getChildren().remove(blocks.get(i));           //may be wrong or cause of an error
+                play.getChildren().remove(blocks.get(i));
                 blocks.remove(i);
 
 
                 blockText.get(i).setVisible(false);
-                play.getChildren().remove(blockText.get(i));           //may be wrong or cause of an error
+                play.getChildren().remove(blockText.get(i));
                 blockText.remove(i);
 
 //    	    		System.gc();
@@ -182,10 +181,10 @@ public class Controller {
 
                 blocks.get(i).setVisible(false);
                 blocks.get(i).setAlive(false);
-                play.getChildren().remove(blocks.get(i));           //may be wrong or cause of an error
+                play.getChildren().remove(blocks.get(i));
                 blocks.remove(i);
                 blockText.get(i).setVisible(false);
-                play.getChildren().remove(blockText.get(i));           //may be wrong or cause of an error
+                play.getChildren().remove(blockText.get(i));
                 blockText.remove(i);
 
             }
@@ -196,7 +195,7 @@ public class Controller {
     protected void Play(Stage primaryStage, ImageView imageview) {
 
         Pane play=new Pane();
-        speed=0; blockTimer=0; scoreTracker=0;
+        speed=0; scoreTracker=0;
         snake.clear();
         blocks.clear();
         blockText.clear();
