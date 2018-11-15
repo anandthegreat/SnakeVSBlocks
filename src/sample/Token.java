@@ -113,7 +113,7 @@ class Shield extends Token{
     	isAlive=true;
     	Timer=new Text("Shield:"+String.valueOf(0));
     	Timer.setX(400);
-    	Timer.setY(50);
+    	Timer.setY(80);
     	Timer.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 18));
     	Timer.setFill(Color.AQUA);
     } 
@@ -154,10 +154,10 @@ class Ball extends Token{
     Ball(String n, String loc) {
         super(n,loc);
         Random R=new Random();
-        value=R.nextInt(20);
+        value=R.nextInt(20)+1;
         ballT=new Text(String.valueOf(value));
-        ballT.setX(photo.getX()+18);
-        ballT.setY(photo.getY()+20);
+        ballT.setX(photo.getX()+20);
+        ballT.setY(photo.getY()+30);
     }
 
     public int getValue() {

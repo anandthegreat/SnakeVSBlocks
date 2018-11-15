@@ -219,6 +219,15 @@ public class Main extends Application {
 
     //////////////////////////////////////////////////////////////////////////////////////
 
+    public void restart(Stage primaryStage,ImageView imageView,Controller currentGame){
+        currentGame=null;                   //Send to dustbin
+        Controller obj = new Controller();
+        obj.Play(primaryStage,imageView);
+
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////
+
     public static void main(String[] args) {
 
         launch(args);

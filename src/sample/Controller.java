@@ -30,7 +30,6 @@ public class Controller {
     private List<Text>  blockText;
     Text Score;                             	// Score Board
     Snake snake=new Snake();
-    int scoreTracker;                        // to keep track of score to increase length of snake
     boolean paused;
     Token T;
     Wall W;
@@ -39,7 +38,6 @@ public class Controller {
     public Controller(){
         this.speed=0;
         this.score=0;
-        this.scoreTracker=0;
         this.blocks=new ArrayList<Block>();
         this.blockText=new ArrayList<Text>();
         this.Score=new Text("Score : "+score.toString());
@@ -68,16 +66,16 @@ public class Controller {
     protected Color colorPicker_Wall() {
     	int toss=rand.nextInt(4);
     	if(toss==0) {
-    		return Color.MEDIUMPURPLE;
+    		return Color.GREENYELLOW;
     	}
     	else if(toss==1) {
-    		return Color.LIGHTGRAY;
+    		return Color.WHITE;
     	}
     	else if(toss==2) {
     		return Color.WHEAT;
     	}
     	else {
-    		return Color.GRAY;
+    		return Color.YELLOW;
     	}  	
     }
     
@@ -140,7 +138,7 @@ public class Controller {
     	if(p<2 && T==null) {
     		int code=rand.nextInt(8);
     		if(code<=4) {
-    			T=new Ball("ball","file:ball.png");   			
+    			T=new Ball("ball","file:ball.png");
     		}
     		else if(code==5) {
     			T=new Destroy_Blocks("destroy","file:destroy.png");
@@ -166,7 +164,7 @@ public class Controller {
     	}
     }
 
-    protected void gameplay(Pane play) {
+    protected void gameplay(Pane play,Rectangle r,Button Quit,Button Pause,Button Restart) {
         Score.setText("Score : "+score.toString());
         int shieldFlag=0;
 //        System.out.println("ShieldFlag : "+shieldFlag);
@@ -230,6 +228,11 @@ public class Controller {
         createToken(play);
         createWall(play);
         checkSnakeBalls(play);
+        r.toFront();
+        Quit.toFront();             //toFront means always in front of all other nodes.
+        Pause.toFront();
+        Restart.toFront();
+        Score.toFront();
     }
     
     protected void checkSnakeBalls(Pane play) {
@@ -270,21 +273,7 @@ public class Controller {
             		snake.setNumBalls(-blocks.get(i).getblockValue());
             		checkSnakeBalls(play);
             	}
-                
-//                if(snake.body.size()<18) {
-//                    if (score - scoreTracker > 20)             // This is of course not the condition to increase snake's length
-//                    {                            // These things will be used when coins are added
-//
-//                        for (int j = 0; j < snake.body.size(); j++) {
-//                            snake.body.get(j).setCenterY(snake.body.get(j).getCenterY() - 20);
-//                        }
-//
-//                        snake.body.add(new Circle(snake.body.get(snake.body.size() - 1).getCenterX(), snake.body.get(snake.body.size() - 1).getCenterY() + 20, 10));
-//                        snake.body.get(snake.body.size() - 1).setFill(Color.YELLOW);
-//                        play.getChildren().add(snake.body.get(snake.body.size() - 1));
-//                        scoreTracker += 20;
-//                    }
-//                }
+
 
                 blocks.get(i).setAlive(false);
                 blocks.get(i).setVisible(false);
@@ -297,6 +286,19 @@ public class Controller {
                 blockText.remove(i);
 
 //    	    		System.gc();
+
+
+//                //Decreasing snake's length
+//
+//                for(int k=0;k<blocks.get(i).getblockValue();k++){
+//
+//                    snake.body.remove(snake.getNumBalls()-1);
+//
+//
+//
+//                }
+
+
             }
             if(T!=null && ((T instanceof Shield)==true) && ((Shield)T).isAlive==true){			//left blank intentionally
             	
@@ -306,6 +308,19 @@ public class Controller {
             	if(T instanceof Ball) {
             		((Ball) T).increaseBalls(snake);
             		((Ball) T).getballT().setVisible(false);
+
+
+            		    for(int k=0;k<((Ball) T).getValue();k++){
+
+                        snake.body.add(new Circle(snake.body.get(snake.body.size() - 1).getCenterX(), snake.body.get(snake.body.size() - 1).getCenterY() + 20, 10));
+                        snake.body.get(snake.body.size() - 1).setFill(Color.YELLOW);
+                        play.getChildren().add(snake.body.get(snake.body.size() - 1));
+
+
+                }
+
+
+
             	}
             	else if(T instanceof Destroy_Blocks) {
             		score=score+((Destroy_Blocks) T).destroyBlocks(play,blocks,blockText);
@@ -313,6 +328,7 @@ public class Controller {
             	else if(T instanceof Shield) {
             		((Shield) T).protectSnake();
             		play.getChildren().add(((Shield) T).Timer);
+
             	}
             	else {
             		((Magnet) T).attractCoins();
@@ -322,6 +338,8 @@ public class Controller {
             	if(T instanceof Shield == false) {
             		T=null;
             	}
+
+
             	
             }
             
@@ -358,14 +376,18 @@ public class Controller {
             }
         }
         
-        if(T!=null && T.getManualY()>820) {
+        if(T!=null && T.getManualY()>900) {
 //        	System.out.println("Removed Token");
         	T.getPhoto().setVisible(false);
+        	if(T instanceof Ball){
+                ((Ball) T).getballT().setVisible(false);
+            }
+            T=null;
         	play.getChildren().remove(T);
-        	T=null;
+
         }
         
-        if(W!=null && W.getManualY()>820) {
+        if(W!=null && W.getManualY()>900) {
 //        	System.out.println("Removed Wall");
         	W.getLine().setVisible(false);
         	play.getChildren().remove(W);
@@ -377,7 +399,7 @@ public class Controller {
     protected void Play(Stage primaryStage, ImageView imageview) {
 
         Pane play=new Pane();
-        speed=0; scoreTracker=0;
+        speed=0;
         snake.body.clear();
         blocks.clear();
         blockText.clear();
@@ -386,30 +408,26 @@ public class Controller {
         blackBackground.setFitHeight(820);
         blackBackground.setFitWidth(620);
 
-        snake.body.add(new Circle(270,600,12));
+        snake.body.add(new Circle(270,500,12));
         snake.body.get(0).setFill(Color.WHITE);
         snake.setScoreText();
         for(int i=1;i<4;i++){
-            snake.body.add(new Circle(270,600+i*20,10));
+            snake.body.add(new Circle(270,500+i*20,10));
             snake.body.get(i).setFill(Color.YELLOW);
         }
 
-        A = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                gameplay(play);
-//                if(T!=null) {
-//                	play.getChildren().add(T.photo);
-//                }
-            }
-        };
-        A.start();
-        runningA=true;
+        Rectangle r = new Rectangle();          // panel for score, play,pause,resume
+        r.setX(10);
+        r.setY(10);
+        r.setWidth(510);
+        r.setHeight(50);
+        r.setFill(Color.WHITE);
+        r.setOpacity(0.95);
 
 
         Button btn6=new Button("X");                    //Quit Button
         btn6.setLayoutX(230);
-        btn6.setLayoutY(20);
+        btn6.setLayoutY(15);
         btn6.setMinSize(30, 30);
         btn6.setStyle("-fx-font: 24 arial; -fx-base: #FE2E2E;");
         btn6.setOnAction(e-> {
@@ -418,7 +436,7 @@ public class Controller {
 
         Button btn7=new Button("| |");                  //Pause Button
         btn7.setLayoutX(170);
-        btn7.setLayoutY(20);
+        btn7.setLayoutY(15);
         btn7.setMinSize(30, 30);
         btn7.setStyle("-fx-font: 24 arial; -fx-base: #FE2E2E;");
         btn7.setOnAction(e-> {
@@ -434,17 +452,37 @@ public class Controller {
             }
         });
 
-//        HBox topPanel = new HBox(5);                	//Horizontal strip in the upper side for pause,stop and score
-//        topPanel.setPadding(new Insets(10));
-//        topPanel.setAlignment(Pos.BASELINE_RIGHT);
-//		  topPanel.getChildren().addAll(btn6,btn7);
-        play.getChildren().setAll(blackBackground,btn6,btn7);
+        Button btn8=new Button("Restart");
+        btn8.setLayoutX(290);
+        btn8.setLayoutY(15);
+        btn8.setMinSize(30, 30);
+        btn8.setStyle("-fx-font: 24 arial; -fx-base: #FE2E2E;");
+        btn8.setOnAction(e-> {
+            obj.restart(primaryStage,imageview,this);
+        });
+
+
+        A = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                gameplay(play,r,btn6,btn7,btn8);
+//                if(T!=null) {
+//                	play.getChildren().add(T.photo);
+//                }
+            }
+        };
+        A.start();
+        runningA=true;
+
+
+        play.getChildren().setAll(blackBackground,r,btn6,btn7,btn8);
         play.getChildren().addAll(snake.body);
         play.getChildren().add(snake.getScore());
 
+
         Score.setX(36);
         Score.setY(44);
-        Score.setFill(Color.WHITE);
+        Score.setFill(Color.RED);
         Score.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
 
         play.getChildren().addAll(blocks);

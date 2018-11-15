@@ -18,7 +18,7 @@ public class Wall {
     	Random rand=new Random();
     	int startX=rand.nextInt(4)+1;
     	int length=rand.nextInt(2);
-    	L=new Line(100*startX+9,-100,100*startX+9,100*length);
+    	L=new Line(100*startX+9,-130,100*startX+9,100*length);
     	L.setStroke(c);
     	L.setStrokeWidth(3);
     }

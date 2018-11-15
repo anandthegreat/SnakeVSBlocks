@@ -8,7 +8,7 @@ import javafx.scene.text.Text;
 
 public class Snake {
     private int numBalls;
-    private Text T;
+    protected Text T;
     List<Circle> body;
 
     Snake(){
