@@ -1,4 +1,3 @@
-
 package sample;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
@@ -23,17 +22,18 @@ public class Block extends Rectangle {
 
     }
 
-    public int getblockValue(){return this.blockValue;}
+    public int getblockValue(){
+    	return this.blockValue;
+    }
     public void setblockValue(int blockValue) {
         this.blockValue=blockValue;
     }
-
     
     void moveDown(double speed) {
     	setManualY(getTranslateY()+1+speed);
     	setTranslateY(getTranslateY() + 1 + speed);
-
     }
+    
 	public boolean getAlive() {
 		return alive;
 	}
