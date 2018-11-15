@@ -1,9 +1,15 @@
 package sample;
 
+import java.util.List;
 import java.util.Random;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 public class Token {
@@ -84,10 +90,13 @@ class Magnet extends Token{
 class Shield extends Token{
 
     private int timelimit;
-
+    long start;
+    boolean isAlive;
+    Text Timer;
     Shield(String n,String loc ) {
         super(n,loc);
         setTimelimit(5);
+        isAlive=false;
     }
 
     public int getTimelimit() {
@@ -99,8 +108,15 @@ class Shield extends Token{
     }
 
     public void protectSnake() {
-
-    }
+    	start = System.currentTimeMillis();
+    	System.out.println("start  : "+start);
+    	isAlive=true;
+    	Timer=new Text("Shield:"+String.valueOf(0));
+    	Timer.setX(400);
+    	Timer.setY(50);
+    	Timer.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 18));
+    	Timer.setFill(Color.AQUA);
+    } 
 
 }
 
@@ -110,8 +126,24 @@ class Destroy_Blocks extends Token{
         super(n, loc);
     }
 
-    public void destroyBlocks() {
+    public int destroyBlocks(Pane play, List<Block> blocks, List<Text> blockText) {
+    	int tempScore=0;
+    	System.out.println("Blocks to be destroyed : "+ blocks.size());
+    	int tempSize=blocks.size();
+    	for(int i=0;i<tempSize;i++) {
+    		tempScore+=blocks.get(0).getblockValue();
+    		blocks.get(0).setAlive(false);
+            blocks.get(0).setVisible(false);
+            play.getChildren().remove(blocks.get(0));
+            blocks.remove(0);
+            
 
+            blockText.get(0).setVisible(false);
+            play.getChildren().remove(blockText.get(0));
+            blockText.remove(0);
+    	}
+    	System.out.println("Blocks after destroyed : "+ blocks.size());
+    	return tempScore;
     }
 
 }

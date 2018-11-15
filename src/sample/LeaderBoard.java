@@ -33,7 +33,7 @@ public class LeaderBoard implements Serializable {
             top10Scores[i]=0;
         }
 
-        for(int i=0;i<10;i++){
+        for(int i=0;i<11;i++){
             highScoreDetail[i]=new Text(String.valueOf(i+1)+"\t\t\t  No records");
             highScoreDetail[i].setX(70);
             highScoreDetail[i].setY(100+i*40);

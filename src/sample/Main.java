@@ -44,7 +44,13 @@ public class Main extends Application {
     ///////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void start(Stage primaryStage) throws Exception{
-
+//    	long start = System.currentTimeMillis();
+    	// ...
+    	
+//    	long finish = System.currentTimeMillis();
+//    	System.out.println(start+" > " +finish);
+//    	long timeElapsed = finish - start;
+//    	System.out.println("Time Elapsed : "+timeElapsed);
         Pane group = new Pane();
         primaryStage.getIcons().add(new Image("file:Snake-icon.png"));;
 
