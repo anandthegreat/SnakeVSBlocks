@@ -35,6 +35,7 @@ public class Controller {
     Token T;
     Wall W;
     AnimationTimer A;
+    boolean runningA;
     public Controller(){
         this.speed=0;
         this.score=0;
@@ -45,7 +46,6 @@ public class Controller {
         this.paused=false;
         T=null;
     }
-
 
     protected Color colorPicker(){                  //Random Color Generator
         int toss= rand.nextInt(6);
@@ -60,9 +60,25 @@ public class Controller {
         else if(toss==4)
             return Color.rgb(255,102,102);      //Light Red
         else if(toss==5)
-            return Color.WHITE;
+            return Color.CORAL;
         else
             return Color.YELLOW;
+    }
+    
+    protected Color colorPicker_Wall() {
+    	int toss=rand.nextInt(4);
+    	if(toss==0) {
+    		return Color.MEDIUMPURPLE;
+    	}
+    	else if(toss==1) {
+    		return Color.LIGHTGRAY;
+    	}
+    	else if(toss==2) {
+    		return Color.WHEAT;
+    	}
+    	else {
+    		return Color.GRAY;
+    	}  	
     }
     
     //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,8 +114,16 @@ public class Controller {
         for(int i=0;i<5;i++){
             int toss= rand.nextInt(3);
             if(toss==0 || toss ==1){
-                int valueofNewBlock= rand.nextInt(20)+1;
-                Blockslist.add(new Block( (i+1)*5+i*100,-100,100,90,valueofNewBlock,colorPicker()));
+            	int valueofNewBlock;
+            	
+            	if(i==1) {													// for having at least one block with less value
+            		valueofNewBlock= rand.nextInt(snake.getNumBalls())+1;
+            	}
+            	else {
+            		valueofNewBlock= rand.nextInt(20)+1;
+            	}
+                
+                Blockslist.add(new Block( (i+1)*5+i*100,-100,96,90,valueofNewBlock,colorPicker()));
                 BlockText.add(new Text(String.valueOf(valueofNewBlock)));
                 BlockText.get(BlockText.size()-1).setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 24));
                 BlockText.get(BlockText.size()-1).setX((i+1)*5+i*100+40);
@@ -114,15 +138,14 @@ public class Controller {
     protected void createToken(Pane play) {
     	int p=rand.nextInt(20);
     	if(p<2 && T==null) {
-    		int code=rand.nextInt(4);
-    		if(code==0) {
-    			T=new Ball("ball","file:ball.png");
-    			
+    		int code=rand.nextInt(8);
+    		if(code<=4) {
+    			T=new Ball("ball","file:ball.png");   			
     		}
-    		else if(code==1) {
+    		else if(code==5) {
     			T=new Destroy_Blocks("destroy","file:destroy.png");
     		}
-    		else if(code==2) {
+    		else if(code==6) {
     			T=new Shield("shield","file:shield.png");
     		}
     		else {
@@ -138,25 +161,49 @@ public class Controller {
     protected void createWall(Pane play) {
     	int p=rand.nextInt(10);
     	if(p<2 && W==null) {
-    		W=new Wall(colorPicker());
+    		W=new Wall(colorPicker_Wall());
     		play.getChildren().add(W.getLine());
     	}
     }
 
     protected void gameplay(Pane play) {
         Score.setText("Score : "+score.toString());
+        int shieldFlag=0;
+//        System.out.println("ShieldFlag : "+shieldFlag);
+//        System.out.println(blocks.size()+" "+blocksText.size());
         for(int i=0;i<blocks.size();i++) {
             blocks.get(i).moveDown(speed);
             moveText(blockText.get(i),speed);
 
         }
-        if(T!=null) {
+        if(T!=null && T instanceof Shield) {
+        	if(((Shield)T).isAlive==true){
+        		if(System.currentTimeMillis()-((Shield) T).start<5000) {
+        			((Shield) T).Timer.setText("Shield:"+String.valueOf(5-(System.currentTimeMillis()-((Shield) T).start)/1000));
+        			shieldFlag=1;
+        		}
+        		else {
+        			
+        			shieldFlag=0;
+        			play.getChildren().remove(((Shield)T).Timer);
+        			System.out.println("Over");
+        			((Shield)T).Timer.setVisible(false);
+        			T=null;
+        		}
+        		
+        	}
+        	else {
+        		T.moveDown(speed);
+        	}
+        }
+//        System.out.println("ShieldFlag : "+shieldFlag);
+        if(T!=null && (T instanceof Shield) == false) {											// if token is on screen
         	T.moveDown(speed);
         	if( T instanceof Ball) {
         		((Ball) T).moveBallText(speed);
         	}
         }
-        if(W!=null) {
+        if(W!=null) {											// if wall is on screen
         	W.moveDown(speed);
         }
         
@@ -178,7 +225,7 @@ public class Controller {
             speed+=0.15;
 //            System.out.println("Speed : "+speed);
         }
-        checkCollision(play);
+        checkCollision(play,shieldFlag);
         checkBoundary(play);
         createToken(play);
         createWall(play);
@@ -188,6 +235,7 @@ public class Controller {
     protected void checkSnakeBalls(Pane play) {
     	if(snake.getNumBalls()<1) {
     		A.stop();
+    		runningA=false;
     		gameOver(play);
     	}
     	
@@ -206,19 +254,22 @@ public class Controller {
     }
 
 
-    protected void checkCollision(Pane play) {
+    protected void checkCollision(Pane play, int shieldFlag) {
         for(int i=0;i<blocks.size();i++) {
             if(blocks.get(i).getBoundsInParent().intersects(snake.body.get(0).getBoundsInParent()) & blocks.get(i).getAlive()==true){    //Collision Check
             	
-//            	if(snake.getNumBalls()>=blocks.get(i).getblockValue()) {
-//            		score+=blocks.get(i).getblockValue();
-//            		snake.setNumBalls(-blocks.get(i).getblockValue());
-//            		snake.setScoreText();
-//            	}
-//            	else {
-//            		snake.setNumBalls(-blocks.get(i).getblockValue());
-//            		checkSnakeBalls(play);
-//            	}
+            	if(shieldFlag==1) {
+            		score+=blocks.get(i).getblockValue();
+            	}
+            	else if(snake.getNumBalls()>=blocks.get(i).getblockValue()) {
+            		score+=blocks.get(i).getblockValue();
+            		snake.setNumBalls(-blocks.get(i).getblockValue());
+            		snake.setScoreText();
+            	}
+            	else {
+            		snake.setNumBalls(-blocks.get(i).getblockValue());
+            		checkSnakeBalls(play);
+            	}
                 
 //                if(snake.body.size()<18) {
 //                    if (score - scoreTracker > 20)             // This is of course not the condition to increase snake's length
@@ -247,30 +298,38 @@ public class Controller {
 
 //    	    		System.gc();
             }
-            if(T!=null && T.getPhoto().getBoundsInParent().intersects(snake.body.get(0).getBoundsInParent())){
+            if(T!=null && ((T instanceof Shield)==true) && ((Shield)T).isAlive==true){			//left blank intentionally
+            	
+            }
+            
+            else if(T!=null && T.getPhoto().getBoundsInParent().intersects(snake.body.get(0).getBoundsInParent())){
             	if(T instanceof Ball) {
             		((Ball) T).increaseBalls(snake);
             		((Ball) T).getballT().setVisible(false);
             	}
             	else if(T instanceof Destroy_Blocks) {
-            		((Destroy_Blocks) T).destroyBlocks();
+            		score=score+((Destroy_Blocks) T).destroyBlocks(play,blocks,blockText);
             	}
             	else if(T instanceof Shield) {
             		((Shield) T).protectSnake();
+            		play.getChildren().add(((Shield) T).Timer);
             	}
             	else {
             		((Magnet) T).attractCoins();
             	}
             	T.getPhoto().setVisible(false);
             	play.getChildren().remove(T);
-            	T=null;
+            	if(T instanceof Shield == false) {
+            		T=null;
+            	}
+            	
             }
             
             if(W!=null && W.getLine().getBoundsInParent().intersects(snake.body.get(0).getBoundsInParent())){	//walls working
 //            	W.getLine().setVisible(false);	
 //            	play.getChildren().remove(W);
 //            	W=null;
-            	System.out.println(W.getLine().getEndX()+" , "+snake.body.get(0).getCenterX() );
+//            	System.out.println(W.getLine().getEndX()+" , "+snake.body.get(0).getCenterX() );
             	if(W.getLine().getEndX()>snake.body.get(0).getCenterX()) {
             		snake.moveLeft();
             	}
@@ -338,7 +397,6 @@ public class Controller {
         A = new AnimationTimer() {
             @Override
             public void handle(long now) {
-//            	Score.setText("Score : "+score.toString());
                 gameplay(play);
 //                if(T!=null) {
 //                	play.getChildren().add(T.photo);
@@ -346,6 +404,7 @@ public class Controller {
             }
         };
         A.start();
+        runningA=true;
 
 
         Button btn6=new Button("X");                    //Quit Button
@@ -375,10 +434,9 @@ public class Controller {
             }
         });
 
-//        HBox topPanel = new HBox(5);                //Horizontal strip in the upper side for pause,stop and score
+//        HBox topPanel = new HBox(5);                	//Horizontal strip in the upper side for pause,stop and score
 //        topPanel.setPadding(new Insets(10));
 //        topPanel.setAlignment(Pos.BASELINE_RIGHT);
-
 //		  topPanel.getChildren().addAll(btn6,btn7);
         play.getChildren().setAll(blackBackground,btn6,btn7);
         play.getChildren().addAll(snake.body);
@@ -400,22 +458,22 @@ public class Controller {
             switch(e.getCode()){
 
                 case A :
-                    if(snake.body.get(0).getCenterX()>10){
+                    if(snake.body.get(0).getCenterX()>10 && runningA==true){
                         snake.moveLeft();
                     }
                     break;
                 case D :
-                    if(snake.body.get(0).getCenterX()<520){
+                    if(snake.body.get(0).getCenterX()<520 && runningA==true){
                         snake.moveRight();
                     }
                     break;
                 case LEFT :
-                    if(snake.body.get(0).getCenterX()>10){
+                    if(snake.body.get(0).getCenterX()>10 && runningA==true){
                         snake.moveLeft();
                     }
                     break;
                 case RIGHT :
-                    if(snake.body.get(0).getCenterX()<520){
+                    if(snake.body.get(0).getCenterX()<520 && runningA==true){
                         snake.moveRight();
                     }
                     break;
@@ -423,7 +481,6 @@ public class Controller {
                     break;
 
             }});
-
 
         primaryStage.setScene(scene);
 
