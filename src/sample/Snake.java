@@ -3,8 +3,11 @@ package sample;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.animation.TranslateTransition;
+import javafx.scene.Node;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 public class Snake {
     private int numBalls;
@@ -45,10 +48,19 @@ public class Snake {
     	return T;
     }
     public void moveLeft() {
+
+
     	for(int i=0;i<this.body.size();i++){
-            this.body.get(i).setCenterX(this.body.get(i).getCenterX()-10);
+            TranslateTransition translate = new TranslateTransition();
+            translate.setByX(-10);
+            translate.setDuration(Duration.millis(1000+i*100));
+            translate.setCycleCount(50);
+            translate.setNode(this.body.get(i));
+            translate.play();
+            //this.body.get(i).setCenterX(this.body.get(i).getCenterX()-10);
         }
     	setScoreText();
+
     }
     public void moveRight() {
     	for(int i=0;i<this.body.size();i++){

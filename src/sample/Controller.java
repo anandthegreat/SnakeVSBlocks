@@ -288,15 +288,7 @@ public class Controller {
 //    	    		System.gc();
 
 
-//                //Decreasing snake's length
-//
-//                for(int k=0;k<blocks.get(i).getblockValue();k++){
-//
-//                    snake.body.remove(snake.getNumBalls()-1);
-//
-//
-//
-//                }
+
 
 
             }
