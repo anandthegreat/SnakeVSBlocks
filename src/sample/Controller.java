@@ -275,6 +275,16 @@ public class Controller {
             		checkSnakeBalls(play);
             	}
 
+                //Decreasing snake's length
+                if(shieldFlag==0) {
+                    for (int k = 0; k < blocks.get(i).getblockValue(); k++) {
+                        if (snake.body.size() > 1) {
+                            snake.body.get(snake.body.size() - 1).setVisible(false);
+                            snake.body.remove(snake.body.size() - 1);
+                        } else break;
+                    }
+                }
+
                 blocks.get(i).setAlive(false);
                 blocks.get(i).setVisible(false);
                 play.getChildren().remove(blocks.get(i));
@@ -285,13 +295,6 @@ public class Controller {
                 blockText.remove(i);
 
 //    	    		System.gc();
-
-
-//                //Decreasing snake's length
-//                for(int k=0;k<blocks.get(i).getblockValue();k++){
-//                    snake.body.remove(snake.getNumBalls()-1);
-//                }
-
 
 
             }

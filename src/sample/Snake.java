@@ -51,13 +51,7 @@ public class Snake {
 
 
     	for(int i=0;i<this.body.size();i++){
-            TranslateTransition translate = new TranslateTransition();
-            translate.setByX(-10);
-            translate.setDuration(Duration.millis(1000+i*100));
-            translate.setCycleCount(50);
-            translate.setNode(this.body.get(i));
-            translate.play();
-            //this.body.get(i).setCenterX(this.body.get(i).getCenterX()-10);
+            this.body.get(i).setCenterX(this.body.get(i).getCenterX()-10);
         }
     	setScoreText();
 
