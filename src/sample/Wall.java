@@ -6,11 +6,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 public class Wall {
-//    private String color;
     private Line L;
     private double y;
+    
     Wall(Color c){
-//        setColor(c);
         setLine(c);
     }
     
@@ -25,13 +24,7 @@ public class Wall {
     public Line getLine() {
     	return L;
     }
-//    public String getColor() {
-//        return color;
-//    }
-//
-//    public void setColor(String color) {
-//        this.color = color;
-//    }
+
     void moveDown(double speed) {
     	setManualY(L.getTranslateY()+1+speed);
     	L.setTranslateY(L.getTranslateY() + 1 + speed);

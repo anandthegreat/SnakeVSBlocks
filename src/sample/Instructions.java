@@ -1,4 +1,5 @@
 package sample;
+
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
@@ -10,7 +11,6 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
 
 public class Instructions {
     Main obj= new Main();

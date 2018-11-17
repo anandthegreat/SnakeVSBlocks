@@ -16,6 +16,7 @@ public class Token {
     private String name;
     protected ImageView photo;
     private double y;
+    
     Token(String n,String p){
         setName(n);
         setPhoto(p);
@@ -30,9 +31,11 @@ public class Token {
     	photo.setFitWidth(50);
     	photo.setFitHeight(50);
     }
+    
     public ImageView getPhoto() {
     	return photo;
     }
+    
     public String getName() {
         return name;
     }
@@ -59,6 +62,7 @@ class Magnet extends Token{
 
     private int timelimit;
     private int range;
+    
     Magnet(String n, String loc) {
         super(n,loc);
         setTimelimit(5);
@@ -68,7 +72,6 @@ class Magnet extends Token{
     public int getTimelimit() {
         return timelimit;
     }
-
     public void setTimelimit(int timelimit) {
         this.timelimit = timelimit;
     }
@@ -76,7 +79,6 @@ class Magnet extends Token{
     public int getRange() {
         return range;
     }
-
     public void setRange(int range) {
         this.range = range;
     }
@@ -90,13 +92,18 @@ class Magnet extends Token{
 class Shield extends Token{
 
     private int timelimit;
-    long start;
+    private long start;
     boolean isAlive;
-    Text Timer;
+    private Text Timer;
+    
     Shield(String n,String loc ) {
         super(n,loc);
         setTimelimit(5);
         isAlive=false;
+    }
+    
+    public Text getTimer() {
+    	return Timer;
     }
 
     public int getTimelimit() {
@@ -108,15 +115,23 @@ class Shield extends Token{
     }
 
     public void protectSnake() {
-    	start = System.currentTimeMillis();
-    	System.out.println("start  : "+start);
+    	setStart(System.currentTimeMillis());
+//    	System.out.println("start  : "+getStart());
     	isAlive=true;
     	Timer=new Text("Shield:"+String.valueOf(0));
     	Timer.setX(400);
     	Timer.setY(80);
     	Timer.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 18));
     	Timer.setFill(Color.AQUA);
-    } 
+    }
+
+	public long getStart() {
+		return start;
+	}
+
+	public void setStart(long start) {
+		this.start = start;
+	} 
 
 }
 
@@ -128,7 +143,7 @@ class Destroy_Blocks extends Token{
 
     public int destroyBlocks(Pane play, List<Block> blocks, List<Text> blockText) {
     	int tempScore=0;
-    	System.out.println("Blocks to be destroyed : "+ blocks.size());
+//    	System.out.println("Blocks to be destroyed : "+ blocks.size());
     	int tempSize=blocks.size();
     	for(int i=0;i<tempSize;i++) {
     		tempScore+=blocks.get(0).getblockValue();
@@ -142,7 +157,7 @@ class Destroy_Blocks extends Token{
             play.getChildren().remove(blockText.get(0));
             blockText.remove(0);
     	}
-    	System.out.println("Blocks after destroyed : "+ blocks.size());
+//    	System.out.println("Blocks after destroyed : "+ blocks.size());
     	return tempScore;
     }
 
@@ -150,14 +165,14 @@ class Destroy_Blocks extends Token{
 
 class Ball extends Token{
     private int value;
-    private Text ballT;
+    private Text ballText;
     Ball(String n, String loc) {
         super(n,loc);
         Random R=new Random();
         value=R.nextInt(20)+1;
-        ballT=new Text(String.valueOf(value));
-        ballT.setX(photo.getX()+20);
-        ballT.setY(photo.getY()+30);
+        ballText=new Text(String.valueOf(value));
+        ballText.setX(photo.getX()+20);
+        ballText.setY(photo.getY()+30);
     }
 
     public int getValue() {
@@ -168,10 +183,10 @@ class Ball extends Token{
         this.value = value;
     }
     void moveBallText(double speed) {
-        ballT.setTranslateY(ballT.getTranslateY() + 1 + speed);
+        ballText.setTranslateY(ballText.getTranslateY() + 1 + speed);
     }
-    public Text getballT() {
-    	return ballT;
+    public Text getballText() {
+    	return ballText;
     }
     public void increaseBalls(Snake snake) {
     	snake.setNumBalls(value);
