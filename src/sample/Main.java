@@ -44,14 +44,14 @@ public class Main extends Application {
     ///////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void start(Stage primaryStage) throws Exception{
-//    	long start = System.currentTimeMillis();
-    	// ...
     	
+//    	long start = System.currentTimeMillis();
 //    	long finish = System.currentTimeMillis();
 //    	System.out.println(start+" > " +finish);
 //    	long timeElapsed = finish - start;
 //    	System.out.println("Time Elapsed : "+timeElapsed);
-        Pane group = new Pane();
+        
+    	Pane group = new Pane();
         primaryStage.getIcons().add(new Image("file:Snake-icon.png"));;
 
         Image image = new Image("file:snake-vs-block.png");
@@ -79,6 +79,7 @@ public class Main extends Application {
         btn.setStyle("-fx-font: 25 arial; -fx-base: #008080;");
 
         ///////////////////////////////////////////////////////////////////////
+        
         Circle snake_animation[]=new Circle[7];
         TranslateTransition translateTransition[]=new TranslateTransition[7];
         int tempY=40;
@@ -99,6 +100,7 @@ public class Main extends Application {
             tempY=tempY-20;
         }
         snake_animation[0].setRadius(12);
+        
         /////////////////////////////////////////////////////////////////////
 
         btn.setOnAction(e-> Menu(primaryStage,imageview));
