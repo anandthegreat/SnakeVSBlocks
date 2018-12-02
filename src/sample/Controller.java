@@ -9,6 +9,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -17,7 +18,10 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 /**
@@ -40,7 +44,7 @@ public class Controller implements Serializable {
      * Main class object to return to the Main screen
      * @see Main
      */
-    private Main obj;
+//    private Main obj;
     /**
      * For controlling the speed of falling blocks
      */
@@ -82,7 +86,7 @@ public class Controller implements Serializable {
      */
     private Wall W;
     
-//    private Coin C[];
+    private Coin C[];
     /**
      * A timer which calls {@link #gameplay}
      * <p>in each frame to check collision, update score, check boundary, and generate tokens
@@ -95,21 +99,23 @@ public class Controller implements Serializable {
     /**
      * Constructor to initialize the data members
      */
-    public Controller(){
+    
+    private LeaderBoard leaderboard;
+    List <Line> burstEffect;
+    public Controller(LeaderBoard L){
         this.speed=0;
         this.score=0;
         this.blocks=new ArrayList<Block>();
         this.blockText=new ArrayList<Text>();
         this.Score=new Text("Score:"+score.toString());
         this.paused=false;
-        obj = new Main();
+        burstEffect=new ArrayList<Line>();
+//        obj = new Main();
         rand=new Random();
         T=new Token[2];
         snake=new Snake();
-        T[0]=null;
-        T[1]=null;
-//        C=new Coin[4];
-        
+        C=new Coin[2];
+        leaderboard=L;
     }
     /**
      * A function which returns a random color object
@@ -200,7 +206,8 @@ public class Controller implements Serializable {
                 int valueofNewBlock;
                 
                 if(i==1) {                                                  // for having at least one block with less value
-                    valueofNewBlock= rand.nextInt(snake.getNumBalls());
+                    System.out.println(snake.getNumBalls());
+                	valueofNewBlock= rand.nextInt(snake.getNumBalls());
                 }
                 else {
                     valueofNewBlock= rand.nextInt(20)+1;
@@ -229,9 +236,7 @@ public class Controller implements Serializable {
         for(int i=0;i<2;i++) {
         	if(p<2 && T[i]==null) {
                 int code=rand.nextInt(8);
-                if(code==1) {
-                	code=7;
-                }
+               // code=8;
                 if(code<=4) {
                     Token temp=new Ball("ball","file:ball.png");
                     if(temp.isOverlapping(blocks,T,W)==false) {
@@ -283,9 +288,20 @@ public class Controller implements Serializable {
         }
     }
     
-//    protected void createCoin(Pane play) {
-//    	
-//    }
+    protected void createCoin(Pane play) {
+    	
+    	for(int i=0;i<2;i++) {
+    		int p=rand.nextInt(20);
+    		if (p<4 && C[i]==null){
+    			Coin temp=new Coin("file:coin.png");
+    			if(temp.isOverlapping(blocks, T, W,C)==false) {
+    				C[i]=temp;
+    				play.getChildren().add(C[i].getPhoto());
+    				play.getChildren().add(C[i].getCoinText());
+    			}
+    		}
+    	}
+    }
 
     /**
      * This method is called in every frame.It controls the whole game.
@@ -298,13 +314,18 @@ public class Controller implements Serializable {
      * @param Pause Pause Button
      * @param Restart Restart Button
      */
-    protected void gameplay(Pane play,Rectangle r,ChoiceBox<String> dropdown,Button Click) {
+    protected void gameplay(Pane play,Rectangle r,ChoiceBox<String> dropdown,Button Click, Stage primaryStage, ImageView imageview) {
         Score.setText("Score:"+score.toString());
         int shieldFlag=0;
         int magnetFlag=0;
 //        System.out.println("ShieldFlag : "+shieldFlag);
 //        System.out.println(blocks.size()+" "+blocksText.size());
-        
+
+        if(blocks.isEmpty()==false && blocks.get(0).getTranslateY()>500 && burstEffect.isEmpty()==false){
+            play.getChildren().removeAll(burstEffect);
+            burstEffect.clear();
+
+        }
         for(int i=0;i<blocks.size();i++) {
             blocks.get(i).moveDown(speed);
             moveText(blockText.get(i),speed);
@@ -369,6 +390,12 @@ public class Controller implements Serializable {
         if(W!=null) {                                           // if wall is on screen
             W.moveDown(speed);
         }
+        for(int i=0;i<2;i++) {
+        	if(C[i]!=null) {
+        		C[i].moveCoinText(speed);
+        		C[i].moveDown(speed);
+        	}
+        }
         
         List<Block> newBlocks=null;            					//so that it is automatically destroyed after each execution
         List<Text>  newBlocksValue=null;
@@ -389,12 +416,12 @@ public class Controller implements Serializable {
 //            System.out.println("Speed : "+speed);
         }
         
-        checkCollision(play,shieldFlag, magnetFlag);
+        checkCollision(play,shieldFlag, magnetFlag, primaryStage, imageview);
         checkBoundary(play);
         createToken(play);
         createWall(play);
-//        createCoin(play);
-        checkSnakeBalls(play);
+        createCoin(play);
+//        checkSnakeBalls(play, primaryStage, imageview);
         r.toFront();
 //        Quit.toFront();             //toFront means always in front of all other nodes.
         Click.toFront();
@@ -402,25 +429,58 @@ public class Controller implements Serializable {
 //        Restart.toFront();
         Score.toFront();
     }
+    
     /**
      * This method keeps a track of the length of snake
      * <p>If it becomes less than 1 , game ends
      * @param play Pane in which the game elements are present.
      */
-    protected void checkSnakeBalls(Pane play) {
+    protected void checkSnakeBalls(Pane play, Stage primaryStage, ImageView imageview) {
         if(snake.getNumBalls()<1) {
             A.stop();
             runningA=false;
-            gameOver(play);
+            gameOver(play, primaryStage, imageview);
         }      
+    }
+     protected void pauseAnimationTimer(Pane play,int snakeNumBalls,int BlockValue){
+        A.stop();
+        long startWaiting=System.currentTimeMillis();
+        int count=100;
+        while(BlockValue>0 || snakeNumBalls>0){
+            if(System.currentTimeMillis()-startWaiting>count)
+            {
+                
+                count+=100;
+                BlockValue--;
+                snakeNumBalls--;
+            }
+
+        }
+        A.start();
+    }
+
+    protected void decreaseSnakeLength(int shieldFlag,int blockVal){
+        //Decreasing snake's length
+        if(shieldFlag==0) {
+            for (int k = 0; k <blockVal; k++) {
+                if (snake.getBody().size() > 1) {
+                    snake.getBody().get(snake.getBody().size() - 1).setVisible(false);
+                    snake.getBody().remove(snake.getBody().size() - 1);
+                }
+                else break;
+            }
+        }
+
     }
     /**
      * This method generates a message when the game ends.
      * <p>It shows the score made by the user
      * @param play Pane in which game elements are present.
      */
-    protected void gameOver(Pane play) {
-        Text t= new Text("Game Over \n \nYour Score \n  "+score.toString());
+    protected void gameOver(Pane play, Stage primaryStage, ImageView imageview) {
+    	leaderboard.addScore(new Score(score));
+//    	System.out.println(dateFormat.format(date));
+    	Text t= new Text("Game Over \n \nYour Score \n  "+score.toString());
         t.setX(200);
         t.setY(240);
         t.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 24));
@@ -429,6 +489,8 @@ public class Controller implements Serializable {
         r.setY(200);
         r.setOpacity(0.4);
         play.getChildren().addAll(r,t);
+//        Scene scene=new Scene(play,530,800);
+//        primaryStage.setScene(scene);
     }
 
     /**
@@ -437,13 +499,26 @@ public class Controller implements Serializable {
      * @param play Pane in which game elements are present.
      * @param shieldFlag A variable which tells whether the Shield is alive or not.
      */
-    protected void checkCollision(Pane play, int shieldFlag, int magnetFlag) {
+    protected void checkCollision(Pane play, int shieldFlag, int magnetFlag, Stage primaryStage, ImageView imageview) {
         for(int i=0;i<blocks.size();i++) 
         {  	
         	//Collision Check
             if(blocks.get(i).getBoundsInParent().intersects(snake.getBody().get(0).getBoundsInParent()) & blocks.get(i).getAlive()==true)
-            {    
-                
+            {     if(blocks.get(i).getblockValue()>5){
+                pauseAnimationTimer(play,snake.getNumBalls(),blocks.get(i).getblockValue());
+            }
+                double xcoor=blocks.get(i).getTranslateX();
+                double ycoor=blocks.get(i).getTranslateY();
+                burstEffect.add(new Line(xcoor+90,ycoor+20,xcoor+110,ycoor));
+                burstEffect.add(new Line(xcoor+20,ycoor+20,xcoor,ycoor));
+                burstEffect.add(new Line(xcoor+50,ycoor+20,xcoor+50,ycoor));
+                burstEffect.add(new Line(xcoor+20,ycoor+50,xcoor,ycoor+50));
+                burstEffect.add(new Line(xcoor+90,ycoor+50,xcoor+110,ycoor+50));
+                for(int b=0;b<burstEffect.size();b++){
+                    burstEffect.get(b).setStroke(Color.WHITE);
+                    burstEffect.get(b).setStrokeWidth(2);
+                }
+                play.getChildren().addAll(burstEffect);
                 if(shieldFlag==1) {
                     score+=blocks.get(i).getblockValue();
                 }
@@ -454,19 +529,12 @@ public class Controller implements Serializable {
                 }
                 else {
                     snake.setNumBalls(-blocks.get(i).getblockValue());
-                    checkSnakeBalls(play);
+                    checkSnakeBalls(play, primaryStage, imageview);
                 }
 
-                //Decreasing snake's length
-                if(shieldFlag==0) {
-                    for (int k = 0; k < blocks.get(i).getblockValue(); k++) {
-                        if (snake.getBody().size() > 1) {
-                            snake.getBody().get(snake.getBody().size() - 1).setVisible(false);
-                            snake.getBody().remove(snake.getBody().size() - 1);
-                        } 
-                        else break;
-                    }
-                }
+                decreaseSnakeLength(shieldFlag, blocks.get(i).getblockValue());
+
+            
 
                 blocks.get(i).setAlive(false);
                 blocks.get(i).setVisible(false);
@@ -488,7 +556,19 @@ public class Controller implements Serializable {
                    
                }
                else if(T[j]!=null && ((T[j] instanceof Magnet)==true) && ((Magnet)T[j]).isAlive==true) {
-            	   
+            	   for(int i=0;i<2;i++) {
+            		   if((C[i]!=null && ((Magnet) T[j]).getRange().getBoundsInParent().intersects(C[i].getPhoto().getBoundsInParent()))){
+            			   score+=C[i].getValue();
+                           System.out.println("Magnet Effect");
+                          
+                           
+                           C[i].getPhoto().setVisible(false);
+                           C[i].getCoinText().setVisible(false);
+                           play.getChildren().remove(C[i].getPhoto());
+                           play.getChildren().remove(C[i].getCoinText());
+                           C[i]=null; 
+            		   }
+               		}
                }
                else if(T[j]!=null && T[j].getPhoto().getBoundsInParent().intersects(snake.getBody().get(0).getBoundsInParent())){
                    if(T[j] instanceof Ball) 
@@ -555,44 +635,11 @@ public class Controller implements Serializable {
                        T[j]=null;
                    }         
                }
-               else if(T[j]!=null && magnetFlag==1 && T[j] instanceof Ball) {
-            	   if(j==0) {
-            		   if(((Magnet) T[j+1]).getRange().getBoundsInParent().intersects(T[j].getPhoto().getBoundsInParent())){
-            			   ((Ball) T[j]).increaseBalls(snake);
-                           ((Ball) T[j]).getballText().setVisible(false);
-
-                           System.out.println("Magnet Effect");
-                           for(int k=0;k<((Ball) T[j]).getValue();k++)
-                           {
-                               snake.getBody().add(new Circle(snake.getBody().get(snake.getBody().size() - 1).getCenterX(), snake.getBody().get(snake.getBody().size() - 1).getCenterY() + 20, 10));
-                               snake.getBody().get(snake.getBody().size() - 1).setFill(Color.YELLOW);
-                               play.getChildren().add(snake.getBody().get(snake.getBody().size() - 1));
-                           }
-                           
-                           T[j].getPhoto().setVisible(false);
-                           play.getChildren().remove(T[j].getPhoto());
-                           T[j]=null; 
-            		   }
-            	   }
-            	   if(j==1) {
-            		   if(((Magnet) T[j-1]).getRange().getBoundsInParent().intersects(T[j].getPhoto().getBoundsInParent())){
-            			   ((Ball) T[j]).increaseBalls(snake);
-                           ((Ball) T[j]).getballText().setVisible(false);
-
-                           System.out.println("Magnet Effect");
-                           for(int k=0;k<((Ball) T[j]).getValue();k++)
-                           {
-                               snake.getBody().add(new Circle(snake.getBody().get(snake.getBody().size() - 1).getCenterX(), snake.getBody().get(snake.getBody().size() - 1).getCenterY() + 20, 10));
-                               snake.getBody().get(snake.getBody().size() - 1).setFill(Color.YELLOW);
-                               play.getChildren().add(snake.getBody().get(snake.getBody().size() - 1));
-                           }
-                           
-                           T[j].getPhoto().setVisible(false);
-                           play.getChildren().remove(T[j].getPhoto());
-                           T[j]=null;
-            		   }
-            	   }
-               }
+//               if( magnetFlag==1 && T[j] instanceof Magnet ) {
+//            	   
+//            
+//            	
+//               }
            }
             
             if(W!=null && W.getLine().getBoundsInParent().intersects(snake.getBody().get(0).getBoundsInParent())){   //walls working
@@ -606,6 +653,19 @@ public class Controller implements Serializable {
                 else {
                     snake.moveRight();
                 }                
+            }
+            for(int i=0;i<2;i++) {
+            	if(C[i]!=null && C[i].getPhoto().getBoundsInParent().intersects(snake.getBody().get(0).getBoundsInParent())) {
+            		score+=C[i].getValue();
+                    System.out.println("Collided with coin");
+                   
+                    
+                    C[i].getPhoto().setVisible(false);
+                    C[i].getCoinText().setVisible(false);
+                    play.getChildren().remove(C[i].getPhoto());
+                    play.getChildren().remove(C[i].getCoinText());
+                    C[i]=null; 
+            	}
             }
         }
     /**
@@ -656,10 +716,23 @@ public class Controller implements Serializable {
      * @param primaryStage
      * @param imageview
      */
-    protected void Play(Stage primaryStage, ImageView imageview) {
-
+    protected void Play(Main M,Stage primaryStage, ImageView imageview) {
+    	System.out.println("Playing");
+    	
+    	//////////////////////
+    	this.speed=0;
+        this.score=0;
+        this.blocks=new ArrayList<Block>();
+        this.blockText=new ArrayList<Text>();
+        this.Score=new Text("Score:"+score.toString());
+        this.paused=false;
+        T=new Token[2];
+        snake=new Snake();
+        C=new Coin[2];
+        ///////////////
         Pane play=new Pane();
         speed=0;
+        snake=new Snake();
         snake.getBody().clear();
         blocks.clear();
         blockText.clear();
@@ -710,17 +783,17 @@ public class Controller implements Serializable {
                  }
         	}
         	else if(choice.equals("Restart")){
-        		obj.restart(primaryStage,imageview,this);
+        		M.restart(primaryStage,imageview,this);
         	}
         	else {
-        		 obj.Menu(primaryStage,imageview);
+        		 M.Menu(primaryStage,imageview);
         	}
         });
 
         A = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                gameplay(play,rectanglePanel,dropdown,dropbtn);
+                gameplay(play,rectanglePanel,dropdown,dropbtn,primaryStage, imageview);
             }
         };
         A.start();

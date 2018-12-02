@@ -17,56 +17,54 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 /**
  * Class to store top 10 scores of the player.
  */
 public class LeaderBoard implements Serializable {
-    /**
-     * Object of Main class
-     */
-    Main obj;
 
-    private Text[] highScoreDetail;                 // Score, Date
-    private Integer[] top10Scores;                  //in ascending order
+    private ArrayList<Score> scores;                 // Score, Date
+    private Text info;
+//    private Integer[] topScores;                  //in ascending order
 
     public LeaderBoard(){
-        obj=new Main();
-        highScoreDetail=new Text[11];
-        top10Scores=new Integer[11];
-        for(int i=0;i<11;i++){
-            top10Scores[i]=0;
-        }
+//        obj=M;
+        scores=new ArrayList<Score>();
+        info=new Text("		LEADERBOARD");
+        info.setX(120);
+        info.setY(100);
+        info.setFont(Font.font("Helvetica", FontWeight.BOLD, FontPosture.REGULAR,22));
+    }
+    
+    public void addScore(Score score) {
+    	int size=scores.size();
+    	scores.add(score);
+    	Collections.sort(scores, new sortbyScore());
+    	setHighScores();
+    	System.out.println("adding Score ");
+    }
 
-        for(int i=0;i<11;i++){
-            highScoreDetail[i]=new Text(String.valueOf(i+1)+"\t\t\t  No records");
-            highScoreDetail[i].setX(70);
-            highScoreDetail[i].setY(100+i*40);
-            highScoreDetail[i].setFont(Font.font("Helvetica", FontWeight.BOLD, FontPosture.REGULAR,28));	   //changed Font to Helvetica
-            highScoreDetail[i].setFill(Color.BROWN);
-        }
+    public void setHighScores(){ 
+    	System.out.println(scores.size());
+//    	System.out.println(scores.get(0).getDate());
+//    	System.out.println(scores.get(0).getScore());
+    	int size=scores.size();
+    	String S="		LEADERBOARD\n	Date					Score \n";
+    	for(int i=0;i<size;i++) {
+    		S=S+(i+1)+" 	"+scores.get(i).toString()+"\n";
+    	}
+    	info.setText(S);
+    	System.out.println("setting score");
 
     }
 
-    public void checkHighScore(Integer score){               //Check is the score can be added to the LeaderBoard
-                                                            //Incomplete function
-        top10Scores[10]=score;
-        Arrays.sort(top10Scores);
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        Date date = new Date();
-//        System.out.println(dateFormat.format(date));
-        for(int i=0;i<10;i++)
-        {
-            if(top10Scores[i]==score){
-                highScoreDetail[i].setText(String.valueOf(i+1) + "\t\t"+ String.valueOf(score)+"\t"+ dateFormat.format(date));
-            }
-        }
-
-    }
-
-    protected void leaderboard(Stage primaryStage, ImageView imageview) {
-        Pane leaderpane=new Pane();
+    protected void leaderboard(Main main, Stage primaryStage, ImageView imageview) {
+        
+    	Pane leaderpane=new Pane();
 
         Button btn6=new Button("Back to Menu");
         btn6.setLayoutX(220);
@@ -74,7 +72,7 @@ public class LeaderBoard implements Serializable {
         btn6.setMinSize(160, 40);
         btn6.setStyle("-fx-font: 20 arial; -fx-base: #87CEFA;");
 
-        btn6.setOnAction(e-> obj.Menu(primaryStage,imageview));
+        btn6.setOnAction(e-> main.Menu(primaryStage,imageview));
 
         Rectangle rect = new Rectangle();
         rect.setX(50);
@@ -84,11 +82,50 @@ public class LeaderBoard implements Serializable {
         rect.setFill(Color.BEIGE);
         rect.setOpacity(0.95);
 
-        leaderpane.getChildren().setAll(imageview,rect,btn6);
-        leaderpane.getChildren().addAll(highScoreDetail);
+        leaderpane.getChildren().setAll(imageview,rect,btn6,info);
+//        leaderpane.getChildren().setAll(info);
+//        leaderpane.getChildren().addAll(highScoreDetail);
 
         Scene scene=new Scene(leaderpane,600,800);
         
         primaryStage.setScene(scene);
     }
+}
+
+class Score{
+	String date;
+	Integer score;
+	
+	Score(Integer score){
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    	Date d = new Date();
+		date=dateFormat.format(d);
+		this.score=score;
+	}
+	
+	public String getDate() {
+		return date;
+	}
+	
+	public Integer getScore() {
+		return score;
+	}
+	
+	public String toString() {
+		return date+" 		"+score.toString();
+	}
+
+	
+}
+
+class sortbyScore implements Comparator<Score>{
+	
+	@Override 
+	public int compare(Score s1, Score s2) {
+		// TODO Auto-generated method stub
+		if(s1.getScore()>s1.getScore())
+			return 1;
+		else
+			return -1;
+	}
 }

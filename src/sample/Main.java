@@ -56,7 +56,9 @@ public class Main extends Application {
     /**
      * Controller object
      */
-    Controller controllerObject;
+    static Controller controllerObject;
+    static LeaderBoard leaderBoardObject;
+    
     ///////////////////////////////////////////////////////////////////////////////////////////
     @Override
     /**
@@ -257,13 +259,13 @@ public class Main extends Application {
 
         
         btn1.setOnAction(e-> {
-            Controller obj=new Controller();
-            obj.Play(primaryStage,imageview);
+//            Controller obj=new Controller(leaderBoardObject);
+            controllerObject.Play(this,primaryStage,imageview);
         });
         
         btn2.setOnAction(e-> {
-            LeaderBoard obj=new LeaderBoard();
-            obj.leaderboard(primaryStage,imageview);
+//            LeaderBoard obj=new LeaderBoard();
+            leaderBoardObject.leaderboard(this,primaryStage,imageview);
         });
         
         btn3.setOnAction(e-> {
@@ -308,9 +310,9 @@ public class Main extends Application {
      * @param currentGame Currently running Controller class object
      */
     public void restart(Stage primaryStage,ImageView imageView,Controller currentGame){
-        currentGame=null;                   	//Send to dustbin
-        Controller obj = new Controller();
-        obj.Play(primaryStage,imageView);
+//        currentGame=null;                   	//Send to dustbin
+//        Controller obj = new Controller();
+        controllerObject.Play(this,primaryStage,imageView);
 
     }
 
@@ -320,6 +322,9 @@ public class Main extends Application {
      * @param args
      */
     public static void main(String[] args) {
+    	 
+    	leaderBoardObject=new LeaderBoard();
+    	controllerObject=new Controller(leaderBoardObject);
         launch(args);
     }
 }
