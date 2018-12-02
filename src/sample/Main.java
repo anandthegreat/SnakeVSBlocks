@@ -32,17 +32,36 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.layout.Pane;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.BlockingDeque;
-
+/**
+ * Main class which creates a start screen for the game
+ * <p>Adds images to the start Menu and buttons for various functions like
+ * <li>Playing the game
+ * <li>Instructions
+ * <li>LeaderBoard
+ * <li>Exiting the game
+ */
 public class Main extends Application {
     Random rand=new Random();
-
+    /**
+     * Controller object
+     */
+    Controller controllerObject;
     ///////////////////////////////////////////////////////////////////////////////////////////
     @Override
+    /**
+     * The main entry point for all JavaFX applications.
+     */
     public void start(Stage primaryStage) throws Exception{
     	
 //    	long start = System.currentTimeMillis();
@@ -101,10 +120,38 @@ public class Main extends Application {
         }
         snake_animation[0].setRadius(12);
         
-        /////////////////////////////////////////////////////////////////////
-
-        btn.setOnAction(e-> Menu(primaryStage,imageview));
-
+        ////////////////////////////////////////////////////////////////////
+        
+        btn.setOnAction(e->	Menu(primaryStage,imageview));
+//        EventHandler<ActionEvent> MenuEvent= new EventHandler<ActionEvent>() {
+//            public void handle(ActionEvent e)
+//            {	
+//            	ObjectInputStream input=null;
+//        		int restoreFlag=0;
+//    			try { 
+//    				input=new ObjectInputStream(new FileInputStream("saveControl.txt"));
+//    				controllerObject=(Controller) input.readObject();
+//    				restoreFlag=1;
+//    				input.close();
+//    			} 
+//    			catch (FileNotFoundException e1) {
+//    				controllerObject = new Controller();
+//    				e1.printStackTrace();
+//    			} 
+//    			catch (IOException e1) {
+//    				controllerObject = new Controller();
+//    				e1.printStackTrace();
+//    			} 
+//    			catch (ClassNotFoundException e1) {
+//    				controllerObject = new Controller();
+//    				e1.printStackTrace();
+//    			}
+//                Menu(primaryStage, imageview, restoreFlag);
+//            }
+//        };
+//        btn.setOnAction(MenuEvent);
+        
+        
         // Blinking Effect in Button
         FadeTransition fadeTransition = new FadeTransition(Duration.seconds(4), btn);
         fadeTransition.setFromValue(1.0);
@@ -121,11 +168,28 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
-
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////
+    
+//    public Controller getcontrollerObject() {
+//    	return controllerObject;
+//    }
 
+
+//	class MenuEvent implements EventHandler<ActionEvent> {
+//    	@Override
+//    	public void handle(ActionEvent event) {
+//    		
+//			
+//    	}
+//    }
+    ///////////////////////////////////////////////////////////////////////////////////
+    /**
+     * Method which creates buttons for various functions
+     * <p>and assigns a controller lambda function for each button
+     * @param primaryStage The primaryStage
+     * @param imageview Image used in the main screen
+     */
     public void Menu(Stage primaryStage, ImageView imageview) {
         Pane subroot = new Pane();
 
@@ -138,11 +202,6 @@ public class Main extends Application {
         Bloom bloom=new Bloom();
         bloom.setThreshold(0.2);
         text.setEffect(bloom);
-
-        Button btn1=new Button("Play");
-        btn1.setLayoutX(95);    btn1.setLayoutY(450);
-        btn1.setMinSize(160, 40);
-        btn1.setStyle("-fx-font: 20 arial; -fx-base: #008080;");
 
         ///////////////////////////////////////////////////////////////////////
         Circle snake_animation[]=new Circle[12];
@@ -166,72 +225,101 @@ public class Main extends Application {
         }
         snake_animation[0].setRadius(12);
         /////////////////////////////////////////////////////////////////////
+        
+        Button btn0=new Button("Resume");
+        btn0.setLayoutX(95);    btn0.setLayoutY(450);
+        btn0.setMinSize(160, 40);
+        btn0.setStyle("-fx-font: 20 arial; -fx-base: #FF0000 ;");
+        
+        Button btn1=new Button("Play");
+        btn1.setLayoutX(95);    btn1.setLayoutY(510);
+        btn1.setMinSize(160, 40);
+        btn1.setStyle("-fx-font: 20 arial; -fx-base: #008080;");
 
         Button btn2=new Button("LeaderBoard");
         btn2.setLayoutX(95);
-        btn2.setLayoutY(510);
+        btn2.setLayoutY(570);
         btn2.setMinSize(160, 40);
         btn2.setStyle("-fx-font: 20 arial; -fx-base: #008080;");
 
-        Button btn3=new Button("Themes");
+
+        Button btn3=new Button("How to Play");
         btn3.setLayoutX(95);
-        btn3.setLayoutY(570);
+        btn3.setLayoutY(630);
         btn3.setMinSize(160, 40);
         btn3.setStyle("-fx-font: 20 arial; -fx-base: #008080;");
 
-        Button btn4=new Button("How to Play");
+        Button btn4=new Button("Exit");
         btn4.setLayoutX(95);
-        btn4.setLayoutY(630);
+        btn4.setLayoutY(690);
         btn4.setMinSize(160, 40);
         btn4.setStyle("-fx-font: 20 arial; -fx-base: #008080;");
 
-        Button btn5=new Button("Exit");
-        btn5.setLayoutX(95);
-        btn5.setLayoutY(690);
-        btn5.setMinSize(160, 40);
-        btn5.setStyle("-fx-font: 20 arial; -fx-base: #008080;");
-
+        
         btn1.setOnAction(e-> {
             Controller obj=new Controller();
             obj.Play(primaryStage,imageview);
         });
+        
         btn2.setOnAction(e-> {
             LeaderBoard obj=new LeaderBoard();
             obj.leaderboard(primaryStage,imageview);
         });
+        
         btn3.setOnAction(e-> {
-            Themes obj=new Themes();
-            obj.themes(primaryStage,imageview);
-        });
-        btn4.setOnAction(e-> {
             Instructions obj=new Instructions();
             obj.instructions(primaryStage,imageview);
         });
-        btn5.setOnAction(e-> Platform.exit());
+        
+        btn4.setOnAction(e-> {
+//        	ObjectOutputStream output = null;
+//			try {
+//				output = new ObjectOutputStream(new FileOutputStream("saveControl.txt"));
+//				output.writeObject(controllerObject);
+//				output.close();
+////				System.out.println("END");
+//			} catch (IOException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+			
+        	Platform.exit();
+        });
 
-
-        subroot.getChildren().addAll(imageview,text,btn1,btn2,btn3,btn4,btn5);
+//        btn0.setOnAction(e-> controllerObject.Play(primaryStage, imageview));
+        
+//        if(restoreFlag==1) {
+//        	subroot.getChildren().add(btn0);
+//        }
+        subroot.getChildren().addAll(imageview,text,btn1,btn2,btn3,btn4);
         subroot.getChildren().addAll(snake_animation);
 
         Scene scene=new Scene(subroot,600,800);
 
         primaryStage.setScene(scene);
-
     }
 
     //////////////////////////////////////////////////////////////////////////////////////
-
+    /**
+     * This method restarts the game by creating new {@link Controller} object
+     * <p>Destroys the current object of Controller and creates a fresh object
+     * @param primaryStage The primaryStage
+     * @param imageView Image used in background
+     * @param currentGame Currently running Controller class object
+     */
     public void restart(Stage primaryStage,ImageView imageView,Controller currentGame){
-        currentGame=null;                   //Send to dustbin
+        currentGame=null;                   	//Send to dustbin
         Controller obj = new Controller();
         obj.Play(primaryStage,imageView);
 
     }
 
     //////////////////////////////////////////////////////////////////////////////////////
-
+    /**
+     * Main method to launch the JavaFx application
+     * @param args
+     */
     public static void main(String[] args) {
-
         launch(args);
     }
 }

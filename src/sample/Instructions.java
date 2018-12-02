@@ -11,10 +11,17 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
+/**
+ * Class for Instructions for the game
+ */
 public class Instructions {
-    Main obj= new Main();
 
+    Main obj= new Main();
+    /**
+     * Creates a text object which contains the instructions
+     * @param primaryStage The primary stage
+     * @param imageview Image used in the background
+     */
     protected void instructions(Stage primaryStage, ImageView imageview) {
         Pane instr=new Pane();
         Text text=new Text();

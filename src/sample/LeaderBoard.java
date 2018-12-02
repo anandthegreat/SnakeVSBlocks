@@ -19,11 +19,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
+/**
+ * Class to store top 10 scores of the player.
+ */
 public class LeaderBoard implements Serializable {
+    /**
+     * Object of Main class
+     */
     Main obj;
-    Text[] highScoreDetail;                 // Score, Date
-    Integer[] top10Scores;                  //in ascending order
+
+    private Text[] highScoreDetail;                 // Score, Date
+    private Integer[] top10Scores;                  //in ascending order
 
     public LeaderBoard(){
         obj=new Main();
@@ -70,22 +76,19 @@ public class LeaderBoard implements Serializable {
 
         btn6.setOnAction(e-> obj.Menu(primaryStage,imageview));
 
-        Rectangle r = new Rectangle();
-        r.setX(50);
-        r.setY(50);
-        r.setWidth(500);
-        r.setHeight(700);
-        r.setFill(Color.BEIGE);
-        r.setOpacity(0.95);
+        Rectangle rect = new Rectangle();
+        rect.setX(50);
+        rect.setY(50);
+        rect.setWidth(500);
+        rect.setHeight(700);
+        rect.setFill(Color.BEIGE);
+        rect.setOpacity(0.95);
 
-        leaderpane.getChildren().setAll(imageview,r,btn6);
+        leaderpane.getChildren().setAll(imageview,rect,btn6);
         leaderpane.getChildren().addAll(highScoreDetail);
 
         Scene scene=new Scene(leaderpane,600,800);
-
-
+        
         primaryStage.setScene(scene);
-
-
     }
 }
