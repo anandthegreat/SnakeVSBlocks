@@ -17,7 +17,7 @@ There are 4 token which could help you in scoring and tackling the falling block
 4. **Shield** : Protects the snake against any block for 5 seconds. 
 5. **Coin** : Increases the score by value of the coin.
 ## Documentation
-We have made a detailed documentation for this project using Javadoc tool. Just download the files in [javadoc](https://github.com/anandthegreat/SnakeVSBlocks/tree/master/javadoc) folder and open [index.html](https://github.com/anandthegreat/SnakeVSBlocks/blob/master/javadoc/index.html) file to see the documentation.
+We have made a detailed documentation for this project using Javadoc tool. Just download the files in [javadoc](https://github.com/anandthegreat/SnakeVSBlocks/tree/master/javadoc) folder and open [index.html](https://github.com/anandthegreat/SnakeVSBlocks/blob/master/javadoc/index.html) file in a browser to see the documentation.
 ### Contributors
 Anand and Atul Anand
 
@@ -25,7 +25,9 @@ Anand and Atul Anand
 
 <img src="https://github.com/anandthegreat/SnakeVSBlocks/blob/master/ScreenShots/ScreenShot1.png" width="300" height="473">
 
+
 <img src="https://github.com/anandthegreat/SnakeVSBlocks/blob/master/ScreenShots/ScreenShot2.png" width="300" height="473">
+
 
 <img src="https://github.com/anandthegreat/SnakeVSBlocks/blob/master/ScreenShots/ScreenShot3.png" width="300" height="473">
 
