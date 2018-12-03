@@ -321,7 +321,7 @@ public class Controller implements Serializable {
 //        System.out.println("ShieldFlag : "+shieldFlag);
 //        System.out.println(blocks.size()+" "+blocksText.size());
 
-        if(blocks.isEmpty()==false && blocks.get(0).getTranslateY()>500 && burstEffect.isEmpty()==false){
+        if(blocks.isEmpty()==false && blocks.get(0).getTranslateY()>700 && burstEffect.isEmpty()==false){
             play.getChildren().removeAll(burstEffect);
             burstEffect.clear();
 
@@ -445,12 +445,12 @@ public class Controller implements Serializable {
      protected void pauseAnimationTimer(Pane play,int snakeNumBalls,int BlockValue){
         A.stop();
         long startWaiting=System.currentTimeMillis();
-        int count=100;
+        int count=30;
         while(BlockValue>0 || snakeNumBalls>0){
             if(System.currentTimeMillis()-startWaiting>count)
             {
                 
-                count+=100;
+                count+=30;
                 BlockValue--;
                 snakeNumBalls--;
             }
