@@ -20,6 +20,7 @@ Anand and Atul Anand
 
 ## Game Screenshots
 
+<img src="https://github.com/anandthegreat/SnakeVSBlocks/blob/master/ScreenShots/ScreenShot1.png" width="400" height="631">
 ![](https://github.com/anandthegreat/SnakeVSBlocks/blob/master/ScreenShots/ScreenShot1.png)
 ![](https://github.com/anandthegreat/SnakeVSBlocks/blob/master/ScreenShots/ScreenShot2.png)
 ![](https://github.com/anandthegreat/SnakeVSBlocks/blob/master/ScreenShots/ScreenShot3.png)
