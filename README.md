@@ -16,6 +16,8 @@ There are 4 token which could help you in scoring and tackling the falling block
 3. **Magnet** : Attracts coins towards the snake within a range.
 4. **Shield** : Protects the snake against any block for 5 seconds. 
 5. **Coin** : Increases the score by value of the coin.
+## Documentation
+We have made a detailed documentation for this project using Javadoc tool. Just download the files in [javadoc](https://github.com/anandthegreat/SnakeVSBlocks/tree/master/javadoc) folder and open [index.html](https://github.com/anandthegreat/SnakeVSBlocks/blob/master/javadoc/index.html) file to see the documentation.
 ### Contributors
 Anand and Atul Anand
 
