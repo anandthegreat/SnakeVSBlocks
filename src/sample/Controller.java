@@ -17,13 +17,16 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
+
 /**
  * <h1>Controller Class for controlling the game</h1>
  * <li>Generates blocks, tokens and walls
@@ -96,33 +99,35 @@ public class Controller implements Serializable {
      * A variable to check if animation timer {@link #A} is running
      */
     private boolean runningA;
+    
+    private LeaderBoard leaderboard;
+    
+    private List <Line> burstEffect;
+    
     /**
      * Constructor to initialize the data members
      */
-    
-    private LeaderBoard leaderboard;
-    List <Line> burstEffect;
     public Controller(LeaderBoard L){
-        this.speed=0;
+    	this.speed=0;
         this.score=0;
         this.blocks=new ArrayList<Block>();
         this.blockText=new ArrayList<Text>();
         this.Score=new Text("Score:"+score.toString());
         this.paused=false;
         burstEffect=new ArrayList<Line>();
-//        obj = new Main();
         rand=new Random();
         T=new Token[2];
-        snake=new Snake();
         C=new Coin[2];
         leaderboard=L;
+        snake=new Snake();
     }
+    
     /**
      * A function which returns a random color object
      * <p>which is required for blocks
      * @return Color object
      */
-    protected Color colorPicker(){                  //Random Color Generator
+    protected Color colorPicker(){                  //Random Color Generator for Blocks
         int toss= rand.nextInt(6);
         if(toss==0)
             return Color.rgb(128,255,255);       //Sky Blue
@@ -139,12 +144,12 @@ public class Controller implements Serializable {
         else
             return Color.YELLOW;
     }
+    
     /**
      * A function which returns a random color for wall
      * @return Color A color object
      */
-
-    protected Color colorPicker_Wall() {
+    protected Color colorPicker_Wall() {			//Random Color Generator for Walls
         int toss=rand.nextInt(4);
         if(toss==0) {
             return Color.GREENYELLOW;
@@ -171,6 +176,7 @@ public class Controller implements Serializable {
     }
     
     //////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     /**
      * Helper class for {@link #createBlocks} function
      * <p>to return Blocks and Blocks Value at the same time
@@ -193,6 +199,7 @@ public class Controller implements Serializable {
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     /**
      * This function creates Blocks and their values
      * @return blockAndText object
@@ -205,8 +212,8 @@ public class Controller implements Serializable {
             if(toss==0 || toss ==1){
                 int valueofNewBlock;
                 
-                if(i==1) {                                                  // for having at least one block with less value
-                    System.out.println(snake.getNumBalls());
+                if(i==1) {                                              // for having at least one block with less value
+//                    System.out.println(snake.getNumBalls());
                 	valueofNewBlock= rand.nextInt(snake.getNumBalls());
                 }
                 else {
@@ -221,11 +228,10 @@ public class Controller implements Serializable {
                 }
             }
         }
-
         return new blockAndText(Blockslist,BlockText);
     }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     /**
      * This method generates tokens randomly
      * @param play Pane which contains UI buttons and game elements
@@ -269,9 +275,9 @@ public class Controller implements Serializable {
 	                }
                 } 
             }
-        }
-        
+        }    
     }
+    
     /**
      * This method creates walls randomly
      * @param play Pane where the walls are added
@@ -313,8 +319,10 @@ public class Controller implements Serializable {
      * @param Quit Quit Button
      * @param Pause Pause Button
      * @param Restart Restart Button
+     * @throws IOException 
+     * @throws FileNotFoundException 
      */
-    protected void gameplay(Pane play,Rectangle r,ChoiceBox<String> dropdown,Button Click, Stage primaryStage, ImageView imageview) {
+    protected void gameplay(Pane play,Rectangle r,ChoiceBox<String> dropdown,Button Click, Stage primaryStage, ImageView imageview) throws FileNotFoundException, IOException {
         Score.setText("Score:"+score.toString());
         int shieldFlag=0;
         int magnetFlag=0;
@@ -430,31 +438,20 @@ public class Controller implements Serializable {
         Score.toFront();
     }
     
-    /**
-     * This method keeps a track of the length of snake
-     * <p>If it becomes less than 1 , game ends
-     * @param play Pane in which the game elements are present.
-     */
-    protected void checkSnakeBalls(Pane play, Stage primaryStage, ImageView imageview) {
-        if(snake.getNumBalls()<1) {
-            A.stop();
-            runningA=false;
-            gameOver(play, primaryStage, imageview);
-        }      
-    }
+    
+    
      protected void pauseAnimationTimer(Pane play,int snakeNumBalls,int BlockValue){
         A.stop();
         long startWaiting=System.currentTimeMillis();
         int count=30;
         while(BlockValue>0 || snakeNumBalls>0){
             if(System.currentTimeMillis()-startWaiting>count)
-            {
+            { 
                 
                 count+=30;
                 BlockValue--;
                 snakeNumBalls--;
             }
-
         }
         A.start();
     }
@@ -470,36 +467,18 @@ public class Controller implements Serializable {
                 else break;
             }
         }
+    }
 
-    }
-    /**
-     * This method generates a message when the game ends.
-     * <p>It shows the score made by the user
-     * @param play Pane in which game elements are present.
-     */
-    protected void gameOver(Pane play, Stage primaryStage, ImageView imageview) {
-    	leaderboard.addScore(new Score(score));
-//    	System.out.println(dateFormat.format(date));
-    	Text t= new Text("Game Over \n \nYour Score \n  "+score.toString());
-        t.setX(200);
-        t.setY(240);
-        t.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 24));
-        Rectangle r=new Rectangle(200,200,Color.WHITE);
-        r.setX(180);
-        r.setY(200);
-        r.setOpacity(0.4);
-        play.getChildren().addAll(r,t);
-//        Scene scene=new Scene(play,530,800);
-//        primaryStage.setScene(scene);
-    }
 
     /**
      * This method checks the collision of different objects with Snake
      * <p>Checks collision with Tokens,Walls and Blocks
      * @param play Pane in which game elements are present.
      * @param shieldFlag A variable which tells whether the Shield is alive or not.
+     * @throws IOException 
+     * @throws FileNotFoundException 
      */
-    protected void checkCollision(Pane play, int shieldFlag, int magnetFlag, Stage primaryStage, ImageView imageview) {
+    protected void checkCollision(Pane play, int shieldFlag, int magnetFlag, Stage primaryStage, ImageView imageview) throws FileNotFoundException, IOException {
         for(int i=0;i<blocks.size();i++) 
         {  	
         	//Collision Check
@@ -533,9 +512,7 @@ public class Controller implements Serializable {
                 }
 
                 decreaseSnakeLength(shieldFlag, blocks.get(i).getblockValue());
-
             
-
                 blocks.get(i).setAlive(false);
                 blocks.get(i).setVisible(false);
                 play.getChildren().remove(blocks.get(i));
@@ -552,8 +529,7 @@ public class Controller implements Serializable {
 
            for(int j=0;j<2;j++) {
         	   if(T[j]!=null && ((T[j] instanceof Shield)==true) && ((Shield)T[j]).isAlive==true){          
-        		   //left blank intentionally
-                   
+        		   //left blank intentionally          
                }
                else if(T[j]!=null && ((T[j] instanceof Magnet)==true) && ((Magnet)T[j]).isAlive==true) {
             	   for(int i=0;i<2;i++) {
@@ -635,14 +611,9 @@ public class Controller implements Serializable {
                        T[j]=null;
                    }         
                }
-//               if( magnetFlag==1 && T[j] instanceof Magnet ) {
-//            	   
-//            
-//            	
-//               }
            }
             
-            if(W!=null && W.getLine().getBoundsInParent().intersects(snake.getBody().get(0).getBoundsInParent())){   //walls working
+            if(W!=null && W.getLine().getBoundsInParent().intersects(snake.getBody().get(0).getBoundsInParent())){   
 //              W.getLine().setVisible(false);  
 //              play.getChildren().remove(W);
 //              W=null;
@@ -654,6 +625,7 @@ public class Controller implements Serializable {
                     snake.moveRight();
                 }                
             }
+            
             for(int i=0;i<2;i++) {
             	if(C[i]!=null && C[i].getPhoto().getBoundsInParent().intersects(snake.getBody().get(0).getBoundsInParent())) {
             		score+=C[i].getValue();
@@ -668,11 +640,63 @@ public class Controller implements Serializable {
             	}
             }
         }
+    
+    /**
+     * This method keeps a track of the length of snake
+     * <p>If it becomes less than 1 , game ends
+     * @param play Pane in which the game elements are present.
+     * @throws IOException 
+     * @throws FileNotFoundException 
+     */
+    protected void checkSnakeBalls(Pane play, Stage primaryStage, ImageView imageview) throws FileNotFoundException, IOException {
+        if(snake.getNumBalls()<1) {
+            A.stop();
+            runningA=false;
+            gameOver(play, primaryStage, imageview);
+        }      
+    }
+    
+    /**
+     * This method generates a message when the game ends.
+     * <p>It shows the score made by the user
+     * @param play Pane in which game elements are present.
+     * @throws IOException 
+     * @throws FileNotFoundException 
+     */
+    protected void gameOver(Pane play, Stage primaryStage, ImageView imageview) throws FileNotFoundException, IOException {
+    	leaderboard.addScore(new Score(score));
+//    	System.out.println(dateFormat.format(date));
+    	Text t= new Text("Game Over \n \nYour Score \n  	"+score.toString());
+        t.setX(200);
+        t.setY(240);
+        t.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 24));
+        
+        Rectangle r=new Rectangle(200,200,Color.WHITE);
+        r.setX(180);
+        r.setY(200);
+        r.setOpacity(0.4);
+        play.getChildren().addAll(r,t);
+        saveScore();
+//        Scene scene=new Scene(play,530,800);
+//        primaryStage.setScene(scene);
+    }
+    
+    public void saveScore() throws FileNotFoundException, IOException {
+    	ObjectOutputStream output = null;
+		try {
+			output = new ObjectOutputStream(new FileOutputStream("scores.txt"));
+			output.writeObject(leaderboard.getScores());
+//			System.out.println("Saved Score");
+		}
+		finally {
+			output.close();
+		}
+    }
+    
     /**
      * This method checks the boundary to remove the falling objects from the pane
      * @param play Pane from which the objects (which crossed the boundary) needs to be removed.
      */
-
     protected void checkBoundary(Pane play) {
         for(int i=0;i<blocks.size();i++) {
 //          System.out.println(blocks.get(i).getManualY());
@@ -717,9 +741,9 @@ public class Controller implements Serializable {
      * @param imageview
      */
     protected void Play(Main M,Stage primaryStage, ImageView imageview) {
-    	System.out.println("Playing");
+    	System.out.println("Playing Game");
     	
-    	//////////////////////
+    	/////////////////////////////////////////////////////////
     	this.speed=0;
         this.score=0;
         this.blocks=new ArrayList<Block>();
@@ -729,7 +753,8 @@ public class Controller implements Serializable {
         T=new Token[2];
         snake=new Snake();
         C=new Coin[2];
-        ///////////////
+        /////////////////////////////////////////////////////////
+        
         Pane play=new Pane();
         speed=0;
         snake=new Snake();
@@ -756,8 +781,7 @@ public class Controller implements Serializable {
         rectanglePanel.setHeight(50);
         rectanglePanel.setFill(Color.WHITE);
         rectanglePanel.setOpacity(0.80);
-              
-        
+                      
         Button dropbtn=new Button("Click");
         dropbtn.setLayoutX(240);
         dropbtn.setLayoutY(15);
@@ -793,7 +817,12 @@ public class Controller implements Serializable {
         A = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                gameplay(play,rectanglePanel,dropdown,dropbtn,primaryStage, imageview);
+                try {
+					gameplay(play,rectanglePanel,dropdown,dropbtn,primaryStage, imageview);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace(); 
+				}
             }
         };
         A.start();

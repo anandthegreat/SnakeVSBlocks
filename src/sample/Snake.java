@@ -1,5 +1,6 @@
 package sample;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,8 +13,12 @@ import javafx.util.Duration;
 /**
  * Snake class for controlling the snake
  */
-public class Snake {
+public class Snake implements Serializable{
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2L;
+	/**
      * The number of balls in the body of snake
      */
     private int numBalls;
@@ -25,7 +30,7 @@ public class Snake {
      * List which contains circle objects for the body of snake
      */
     private List<Circle> body;
-  //  public static double snakePos=270;
+//  public static double snakePos=270;
     /**
      * Constructor to initialize the snake
      */

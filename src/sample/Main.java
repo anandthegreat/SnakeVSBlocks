@@ -10,39 +10,23 @@ import javafx.scene.effect.Bloom;
 import javafx.scene.effect.Glow;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import javafx.event.ActionEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.KeyCode;
-import javafx.event.EventHandler;
 import javafx.scene.layout.Pane;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.stage.*;
 import javafx.util.Duration;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import javafx.scene.layout.Pane;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-import java.util.concurrent.BlockingDeque;
+
 /**
  * Main class which creates a start screen for the game
  * <p>Adds images to the start Menu and buttons for various functions like
@@ -57,8 +41,8 @@ public class Main extends Application {
      * Controller object
      */
     static Controller controllerObject;
+     
     static LeaderBoard leaderBoardObject;
-    
     ///////////////////////////////////////////////////////////////////////////////////////////
     @Override
     /**
@@ -264,7 +248,6 @@ public class Main extends Application {
         });
         
         btn2.setOnAction(e-> {
-//            LeaderBoard obj=new LeaderBoard();
             leaderBoardObject.leaderboard(this,primaryStage,imageview);
         });
         
@@ -274,17 +257,6 @@ public class Main extends Application {
         });
         
         btn4.setOnAction(e-> {
-//        	ObjectOutputStream output = null;
-//			try {
-//				output = new ObjectOutputStream(new FileOutputStream("saveControl.txt"));
-//				output.writeObject(controllerObject);
-//				output.close();
-////				System.out.println("END");
-//			} catch (IOException e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			}
-			
         	Platform.exit();
         });
 
@@ -293,12 +265,16 @@ public class Main extends Application {
 //        if(restoreFlag==1) {
 //        	subroot.getChildren().add(btn0);
 //        }
+        
         subroot.getChildren().addAll(imageview,text,btn1,btn2,btn3,btn4);
         subroot.getChildren().addAll(snake_animation);
 
         Scene scene=new Scene(subroot,600,800);
 
         primaryStage.setScene(scene);
+        primaryStage.setOnCloseRequest(e->{
+        	System.out.println("Hello World");
+        });
     }
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -310,7 +286,7 @@ public class Main extends Application {
      * @param currentGame Currently running Controller class object
      */
     public void restart(Stage primaryStage,ImageView imageView,Controller currentGame){
-//        currentGame=null;                   	//Send to dustbin
+//        currentGame=null;                   						//Send to dustbin
 //        Controller obj = new Controller();
         controllerObject.Play(this,primaryStage,imageView);
 
@@ -320,10 +296,35 @@ public class Main extends Application {
     /**
      * Main method to launch the JavaFx application
      * @param args
+     * @throws ClassNotFoundException 
      */
-    public static void main(String[] args) {
-    	 
-    	leaderBoardObject=new LeaderBoard();
+    public static void main(String[] args) throws ClassNotFoundException {
+    	
+    	try {			
+			ObjectInputStream input1=new ObjectInputStream(new FileInputStream("scores.txt"));
+			ArrayList<Score> s=(ArrayList<Score>) input1.readObject();
+			System.out.println("Scores Imported");
+			leaderBoardObject=new LeaderBoard(s);
+			System.out.println("Size of Leaderboard : "+leaderBoardObject.getScores().size());
+			input1.close();
+		}
+		catch(IOException E) {
+			leaderBoardObject=new LeaderBoard(new ArrayList<Score>());
+//			controllerObject=new Controller(leaderBoardObject);
+		} 
+//    	
+//    	try {
+//    		ObjectInputStream input2=new ObjectInputStream(new FileInputStream("savedController.txt"));
+//    		Snake snake=(Snake) input2.readObject();
+//    		controllerObject=new Controller(snake,leaderBoardObject);
+//    		System.out.println("Previous Game Imported");
+//    		input2.close();
+//    	}
+//    	catch(IOException E) {
+//			controllerObject=new Controller(null,leaderBoardObject);
+//		} 
+   
+//    	leaderBoardObject=new LeaderBoard();
     	controllerObject=new Controller(leaderBoardObject);
         launch(args);
     }
