@@ -19,7 +19,7 @@ There are 4 token which could help you in scoring and tackling the falling block
 ## Documentation
 We have made a detailed documentation for this project using Javadoc tool. Just download the files in [javadoc](https://github.com/anandthegreat/SnakeVSBlocks/tree/master/javadoc) folder and open [index.html](https://github.com/anandthegreat/SnakeVSBlocks/blob/master/javadoc/index.html) file in a browser to see the documentation.
 ### Contributors
-Anand and Atul Anand
+[Anand](https://github.com/anandthegreat) and [Atul Anand](https://github.com/atul2938)
 
 ## Game Screenshots
 
