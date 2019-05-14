@@ -220,11 +220,14 @@ public class Controller implements Serializable {
                     valueofNewBlock= rand.nextInt(20)+1;
                 }
                 if(valueofNewBlock!=0) {
-                	Blockslist.add(new Block( (i+1)*5+i*100,-100,96,90,valueofNewBlock,colorPicker()));
-                    BlockText.add(new Text(String.valueOf(valueofNewBlock)));
-                    BlockText.get(BlockText.size()-1).setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 24));
-                    BlockText.get(BlockText.size()-1).setX((i+1)*5+i*100+40);
-                    BlockText.get(BlockText.size()-1).setY(-50);
+                    Block block = new Block( (i+1)*5+i*100,-100,96,90,valueofNewBlock,colorPicker());
+                    Blockslist.add(block);
+
+                    Text text = new Text(String.valueOf(valueofNewBlock));
+                    text.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 24));
+                    text.setX((i+1)*5+i*100 + block.getWidth()/2 - (text.getBoundsInLocal().getWidth() / 2));
+                    text.setY(-50);
+                    BlockText.add(text);
                 }
             }
         }
